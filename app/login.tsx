@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { Feather } from "@expo/vector-icons";
 import {
   Image,
   ScrollView,
@@ -8,163 +8,259 @@ import {
   View,
 } from "react-native";
 
-export default function LoginScreen() {
-  const router = useRouter();
+// Dados para o carrossel (requires estáticos)
+const explorarData = [
+  {
+    id: "porto-seguro",
+    imagem: require("../assets/images/Portoseguro.png"),
+  },
+  {
+    id: "natal",
+    imagem: require("../assets/images/Natal.png"),
+  },
+  {
+    id: "rio-de-janeiro",
+    imagem: require("../assets/images/RiodeJaneiro.png"),
+  },
+];
 
+export default function HomeScreen() {
   return (
-    <View style={styles.container}>
-      {/* Logo */}
-      <Image
-        source={require("../assets/images/Sublogo.png")}
-        style={styles.logo}
-        resizeMode="contain"
-      />
+    <View style={styles.screen}>
+      {/* Conteúdo principal com scroll */}
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 100 }} // espaço no fim
+      >
+        {/* Cabeçalho amarelo */}
+        <View style={styles.headerYellow}>
+          <View style={styles.headerContainer}>
+            <View>
+              <Text style={styles.greetingText}>Olá</Text>
+              <Text style={styles.userName}>Theo Natan</Text>
+            </View>
 
-      {/* Menu principal */}
-      <View style={styles.menuContainer}>
-        <TouchableOpacity style={styles.menuButtonLight}>
+            <Image
+              source={require("../assets/images/Sublogo.png")}
+              style={styles.logo}
+            />
+          </View>
+
+          {/* Botões de Menu */}
+          <View style={styles.menuContainer}>
+            <TouchableOpacity style={styles.menuButtonLight}>
+              <Image
+                source={require("../assets/images/mala.png")}
+                style={styles.buttonIcon}
+              />
+              <Text style={styles.buttonTextDark}>Viagens</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuButtonDark}>
+              <Image
+                source={require("../assets/images/arvore_trilha.png")}
+                style={styles.buttonIcon}
+              />
+              <Text style={styles.buttonTextLight}>Trilhas</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Propaganda (parte branca) */}
+        <TouchableOpacity style={styles.promoContainer}>
           <Image
-            source={require("../assets/images/mala.png")}
-            style={styles.buttonIcon}
-            resizeMode="contain"
+            source={require("../assets/images/Propaganda.png")}
+            style={styles.promoBanner}
           />
-          <Text style={styles.buttonTextDark}>Viagens</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.menuButtonDark}>
-          <Image
-            source={require("../assets/images/arvore trila.png")}
-            style={styles.buttonIcon}
-            resizeMode="contain"
-          />
-          <Text style={styles.buttonTextLight}>Trilhas</Text>
-        </TouchableOpacity>
-      </View>
+        {/* Seção Explorar */}
+        <View style={styles.exploreSection}>
+          <Text style={styles.exploreTitle}>Explorar</Text>
+          <Text style={styles.exploreSubtitle}>
+            Descubra lugares e experiências!
+          </Text>
 
-      {/* Propaganda */}
-      <TouchableOpacity>
-        <Image
-          source={require("../assets/images/Propaganda.png")}
-          style={styles.promoBanner}
-          resizeMode="contain"
-        />
-      </TouchableOpacity>
-
-      {/* Explorar mais */}
-      <Text style={styles.sectionTitle}>Explorar Mais</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <TouchableOpacity style={styles.exploreCard}>
-          <Image style={styles.exploreCardImage} />
-        </TouchableOpacity>
-        {/* Aqui você pode adicionar mais cards de exploração */}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.carouselContainer}
+          >
+            {explorarData.map((item) => (
+              <TouchableOpacity key={item.id} style={styles.card}>
+                <Image source={item.imagem} style={styles.cardImage} />
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
       </ScrollView>
 
-      {/* Navbar */}
+      {/* Barra de Navegação Inferior */}
       <View style={styles.navbar}>
         <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navText}>Início</Text>
+          <Feather name="search" size={24} color="#333" />
+          <Text style={styles.navText}>Explorar</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navText}>Pesquisar</Text>
+          <Feather name="globe" size={24} color="#333" />
+          <Text style={styles.navText}>Minhas viagens</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navText}>Perfil</Text>
+          <Feather name="bell" size={24} color="#333" />
+          <Text style={styles.navText}>Notificações</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navItem}>
+          <Feather name="user" size={24} color="#333" />
+          <Text style={styles.navText}>Entrar</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
 
+// Estilos
 const styles = StyleSheet.create({
-  container: {
+  screen: {
     flex: 1,
-    backgroundColor: "#FEE600",
-    paddingTop: 50,
+    backgroundColor: "#F4F4F4",
+  },
+  headerYellow: {
+    backgroundColor: "#FFD700",
     paddingHorizontal: 20,
+    paddingTop: 50,
+    paddingBottom: 30,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+  },
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  greetingText: {
+    fontSize: 22,
+    color: "#333",
+  },
+  userName: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "#000000ff",
   },
   logo: {
-    width: 180,
-    height: 80,
-    alignSelf: "center",
-    marginBottom: 20,
+    width: 70,
+    height: 70,
+    resizeMode: "contain",
   },
   menuContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 20,
   },
   menuButtonLight: {
     flex: 1,
-    backgroundColor: "#fff",
-    padding: 15,
-    marginRight: 10,
-    borderRadius: 10,
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    padding: 20,
+    borderRadius: 20,
     alignItems: "center",
+    marginRight: 10,
   },
   menuButtonDark: {
     flex: 1,
-    backgroundColor: "#000",
-    padding: 15,
-    marginLeft: 10,
-    borderRadius: 10,
+    backgroundColor: "#0902B0",
+    padding: 20,
+    borderRadius: 20,
     alignItems: "center",
+    marginLeft: 10,
   },
   buttonIcon: {
-    width: 40,
-    height: 40,
+    width: 30,
+    height: 30,
     marginBottom: 8,
+    resizeMode: "contain",
   },
   buttonTextDark: {
-    color: "#000",
-    fontSize: 16,
+    color: "#333",
     fontWeight: "bold",
   },
   buttonTextLight: {
-    color: "#fff",
-    fontSize: 16,
+    color: "white",
     fontWeight: "bold",
+  },
+
+  // Propaganda fora do header
+  promoContainer: {
+    marginHorizontal: 20,
+    marginTop: 20,
+    marginBottom: 30,
+    borderRadius: 20,
+    overflow: "hidden",
+    backgroundColor: "#fff",
+    elevation: 3, // sombra no Android
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 }, // só cima/baixo
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
   },
   promoBanner: {
     width: "100%",
-    height: 150,
-    borderRadius: 12,
-    marginBottom: 20,
+    height: 180,
+    resizeMode: "cover",
+    borderRadius: 20,
   },
-  sectionTitle: {
-    fontSize: 18,
+
+  exploreSection: {
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    backgroundColor: "#F4F4F4",
+  },
+  exploreTitle: {
+    fontSize: 22,
     fontWeight: "bold",
-    marginBottom: 10,
-    color: "#000",
+    color: "#000000ff",
   },
-  exploreCard: {
+  exploreSubtitle: {
+    fontSize: 15,
+    color: "#000000ff",
+    marginBottom: 15,
+  },
+  carouselContainer: {
+    paddingBottom: 20,
+  },
+  card: {
     width: 200,
-    height: 120,
-    backgroundColor: "#fff",
-    borderRadius: 12,
+    height: 260,
     marginRight: 15,
+    borderRadius: 15,
     overflow: "hidden",
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3,
   },
-  exploreCardImage: {
+  cardImage: {
     width: "100%",
     height: "100%",
+    borderRadius: 15,
   },
   navbar: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
     flexDirection: "row",
     justifyContent: "space-around",
-    paddingVertical: 15,
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    position: "absolute",
-    bottom: 10,
-    left: 20,
-    right: 20,
-    elevation: 5,
+    backgroundColor: "white",
+    paddingTop: 10,
+    paddingBottom: 10,
+    borderTopWidth: 1,
+    borderTopColor: "#E0E0E0",
   },
   navItem: {
     alignItems: "center",
   },
   navText: {
-    fontSize: 14,
-    color: "#000",
+    fontSize: 12,
+    color: "#333",
+    marginTop: 2,
   },
 });
