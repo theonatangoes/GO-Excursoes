@@ -1,4 +1,5 @@
 import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import {
   Image,
   ScrollView,
@@ -24,13 +25,23 @@ const explorarData = [
   },
 ];
 
-export default function HomeScreen() {
+export default function LoginScreen() {
+  const router = useRouter();
+
+  // Função para lidar com o clique e navegar para a tela de detalhes
+  const handleCardPress = (itemId: string) => {
+    if (itemId === "porto-seguro") {
+      router.push("/detalhes_viagem"); // Navega para detalhes
+    } else {
+      console.log(`Navegação para ${itemId} ainda não implementada.`);
+    }
+  };
+
   return (
     <View style={styles.screen}>
-      {/* Conteúdo principal com scroll */}
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 100 }} // espaço no fim
+        contentContainerStyle={{ paddingBottom: 100 }}
       >
         {/* Cabeçalho amarelo */}
         <View style={styles.headerYellow}>
@@ -65,7 +76,7 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Propaganda (parte branca) */}
+        {/* Propaganda */}
         <TouchableOpacity style={styles.promoContainer}>
           <Image
             source={require("../assets/images/Propaganda.png")}
@@ -86,7 +97,11 @@ export default function HomeScreen() {
             contentContainerStyle={styles.carouselContainer}
           >
             {explorarData.map((item) => (
-              <TouchableOpacity key={item.id} style={styles.card}>
+              <TouchableOpacity
+                key={item.id}
+                style={styles.card}
+                onPress={() => handleCardPress(item.id)}
+              >
                 <Image source={item.imagem} style={styles.cardImage} />
               </TouchableOpacity>
             ))}
@@ -139,7 +154,7 @@ const styles = StyleSheet.create({
   },
   greetingText: {
     fontSize: 22,
-    color: "#333",
+    color: "#000000ff",
   },
   userName: {
     fontSize: 26,
@@ -178,27 +193,27 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   buttonTextDark: {
-    color: "#333",
+    color: "#000000ff",
     fontWeight: "bold",
   },
   buttonTextLight: {
     color: "white",
     fontWeight: "bold",
   },
-
-  // Propaganda fora do header
   promoContainer: {
     marginHorizontal: 20,
     marginTop: 20,
     marginBottom: 30,
     borderRadius: 20,
-    overflow: "hidden",
-    backgroundColor: "#fff",
-    elevation: 3, // sombra no Android
+    backgroundColor: "transparent",
+    elevation: 5,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 }, // só cima/baixo
-    shadowOpacity: 0.12,
-    shadowRadius: 4,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
   },
   promoBanner: {
     width: "100%",
@@ -206,7 +221,6 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
     borderRadius: 20,
   },
-
   exploreSection: {
     paddingHorizontal: 20,
     paddingTop: 10,
@@ -260,7 +274,7 @@ const styles = StyleSheet.create({
   },
   navText: {
     fontSize: 12,
-    color: "#333",
+    color: "#000000ff",
     marginTop: 2,
   },
 });
