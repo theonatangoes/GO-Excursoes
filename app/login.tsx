@@ -1,280 +1,277 @@
-import { Feather } from "@expo/vector-icons";
+import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import React, { useState } from "react";
 import {
   Image,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 
-// Dados para o carrossel (requires estáticos)
-const explorarData = [
-  {
-    id: "porto-seguro",
-    imagem: require("../assets/images/Portoseguro.png"),
-  },
-  {
-    id: "natal",
-    imagem: require("../assets/images/Natal.png"),
-  },
-  {
-    id: "rio-de-janeiro",
-    imagem: require("../assets/images/RiodeJaneiro.png"),
-  },
-];
-
 export default function LoginScreen() {
   const router = useRouter();
+  const [isPasswordVisible, setPasswordVisible] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
-  // Função para lidar com o clique e navegar para a tela de detalhes
-  const handleCardPress = (itemId: string) => {
-    if (itemId === "porto-seguro") {
-      router.push("/detalhes_viagem"); // Navega para detalhes
-    } else {
-      console.log(`Navegação para ${itemId} ainda não implementada.`);
-    }
+  // Esta função já está correta
+  const handleLogin = () => {
+    console.log("Navegando para a tela de excursões...");
+    // A rota '/excursões' corresponde ao arquivo app/excursões.tsx
+    router.replace("/excursoes");
+  };
+
+  const navigateToRegister = () => {
+    router.push("/criarconta");
   };
 
   return (
-    <View style={styles.screen}>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 100 }}
-      >
-        {/* Cabeçalho amarelo */}
-        <View style={styles.headerYellow}>
-          <View style={styles.headerContainer}>
-            <View>
-              <Text style={styles.greetingText}>Olá</Text>
-              <Text style={styles.userName}>Theo Natan</Text>
-            </View>
-
-            <Image
-              source={require("../assets/images/Sublogo.png")}
-              style={styles.logo}
-            />
-          </View>
-
-          {/* Botões de Menu */}
-          <View style={styles.menuContainer}>
-            <TouchableOpacity style={styles.menuButtonLight}>
-              <Image
-                source={require("../assets/images/mala.png")}
-                style={styles.buttonIcon}
-              />
-              <Text style={styles.buttonTextDark}>Viagens</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuButtonDark}>
-              <Image
-                source={require("../assets/images/arvore_trilha.png")}
-                style={styles.buttonIcon}
-              />
-              <Text style={styles.buttonTextLight}>Trilhas</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Propaganda */}
-        <TouchableOpacity style={styles.promoContainer}>
-          <Image
-            source={require("../assets/images/Propaganda.png")}
-            style={styles.promoBanner}
-          />
-        </TouchableOpacity>
-
-        {/* Seção Explorar */}
-        <View style={styles.exploreSection}>
-          <Text style={styles.exploreTitle}>Explorar</Text>
-          <Text style={styles.exploreSubtitle}>
-            Descubra lugares e experiências!
-          </Text>
-
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.carouselContainer}
-          >
-            {explorarData.map((item) => (
-              <TouchableOpacity
-                key={item.id}
-                style={styles.card}
-                onPress={() => handleCardPress(item.id)}
-              >
-                <Image source={item.imagem} style={styles.cardImage} />
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-      </ScrollView>
-
-      {/* Barra de Navegação Inferior */}
-      <View style={styles.navbar}>
-        <TouchableOpacity style={styles.navItem}>
-          <Feather name="search" size={24} color="#333" />
-          <Text style={styles.navText}>Explorar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Feather name="globe" size={24} color="#333" />
-          <Text style={styles.navText}>Minhas viagens</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Feather name="bell" size={24} color="#333" />
-          <Text style={styles.navText}>Notificações</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Feather name="user" size={24} color="#333" />
-          <Text style={styles.navText}>Entrar</Text>
-        </TouchableOpacity>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
+      <View style={styles.header}>
+        <Image
+          source={require("../assets/images/Sublogo Amarelo.png")}
+          style={styles.logo}
+        />
       </View>
-    </View>
+
+      <View style={styles.formContainer}>
+        <TouchableOpacity
+          onPress={() => router.push("/bemvindo")}
+          style={styles.backButton}
+        >
+          <Ionicons name="arrow-back" size={24} color="#333" />
+        </TouchableOpacity>
+
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <Text style={styles.title}>Entrar</Text>
+
+          <View style={styles.registerPrompt}>
+            <Text style={styles.registerPromptText}>Não tem uma conta? </Text>
+            <TouchableOpacity onPress={navigateToRegister}>
+              <Text style={styles.registerLink}>Inscreva-se</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Email</Text>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.textInput}
+                placeholder="seuemail@exemplo.com"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                placeholderTextColor="#999"
+              />
+            </View>
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Senha</Text>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.textInput}
+                placeholder="********"
+                secureTextEntry={!isPasswordVisible}
+                placeholderTextColor="#999"
+              />
+              <TouchableOpacity
+                onPress={() => setPasswordVisible(!isPasswordVisible)}
+              >
+                <Feather
+                  name={isPasswordVisible ? "eye" : "eye-off"}
+                  size={20}
+                  color="#888"
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View style={styles.optionsRow}>
+            <TouchableOpacity
+              style={styles.rememberContainer}
+              onPress={() => setRememberMe(!rememberMe)}
+            >
+              <MaterialCommunityIcons
+                name={rememberMe ? "checkbox-marked" : "checkbox-blank-outline"}
+                size={24}
+                color={rememberMe ? "#0902B0" : "#888"}
+              />
+              <Text style={styles.rememberText}>Lembre de mim</Text>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Text style={styles.forgotPasswordLink}>Esqueceu a senha?</Text>
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+            <Text style={styles.loginButtonText}>Entrar</Text>
+          </TouchableOpacity>
+
+          <View style={styles.separatorContainer}>
+            <View style={styles.separatorLine} />
+            <Text style={styles.separatorText}>Ou</Text>
+            <View style={styles.separatorLine} />
+          </View>
+
+          <TouchableOpacity style={styles.socialButton}>
+            <Ionicons name="logo-google" size={22} color="#DB4437" />
+            <Text style={styles.socialButtonText}>Continue com Google</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.socialButton}>
+            <Ionicons name="logo-facebook" size={22} color="#4267B2" />
+            <Text style={styles.socialButtonText}>Continue com Facebook</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
-// Estilos
 const styles = StyleSheet.create({
-  screen: {
+  container: {
     flex: 1,
-    backgroundColor: "#F4F4F4",
+    backgroundColor: "#0902B0",
   },
-  headerYellow: {
-    backgroundColor: "#FFD700",
-    paddingHorizontal: 20,
-    paddingTop: 50,
-    paddingBottom: 30,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
+  header: {
+    flex: 0.3,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  headerContainer: {
+  logo: {
+    width: 120,
+    height: 120,
+    resizeMode: "contain",
+  },
+  formContainer: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 35,
+    borderTopRightRadius: 35,
+    paddingHorizontal: 25,
+    paddingTop: 30,
+  },
+  backButton: {
+    position: "absolute",
+    top: 30,
+    left: 25,
+    zIndex: 1,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#0902B0",
+    textAlign: "center",
+    marginBottom: 8,
+    marginTop: 20,
+  },
+  registerPrompt: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginBottom: 25,
+  },
+  registerPromptText: {
+    fontSize: 14,
+    color: "#666",
+  },
+  registerLink: {
+    fontSize: 14,
+    color: "#0902B0",
+    fontWeight: "bold",
+  },
+  inputGroup: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 14,
+    color: "#555",
+    marginBottom: 8,
+    fontWeight: "500",
+  },
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F7F7F7",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#E8E8E8",
+    paddingHorizontal: 15,
+  },
+  textInput: {
+    flex: 1,
+    height: 50,
+    fontSize: 16,
+    color: "#333",
+  },
+  optionsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 25,
+  },
+  rememberContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  rememberText: {
+    color: "#555",
+    fontSize: 14,
+  },
+  forgotPasswordLink: {
+    color: "#0902B0",
+    fontWeight: "bold",
+    fontSize: 14,
+  },
+  loginButton: {
+    backgroundColor: "#FFDE00",
+    paddingVertical: 15,
+    borderRadius: 12,
     alignItems: "center",
     marginBottom: 20,
   },
-  greetingText: {
-    fontSize: 22,
-    color: "#000000ff",
-  },
-  userName: {
-    fontSize: 26,
+  loginButtonText: {
+    color: "#0902B0",
+    fontSize: 18,
     fontWeight: "bold",
-    color: "#000000ff",
   },
-  logo: {
-    width: 70,
-    height: 70,
-    resizeMode: "contain",
-  },
-  menuContainer: {
+  separatorContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  menuButtonLight: {
-    flex: 1,
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
-    padding: 20,
-    borderRadius: 20,
     alignItems: "center",
-    marginRight: 10,
+    marginBottom: 20,
   },
-  menuButtonDark: {
+  separatorLine: {
     flex: 1,
-    backgroundColor: "#0902B0",
-    padding: 20,
-    borderRadius: 20,
-    alignItems: "center",
-    marginLeft: 10,
+    height: 1,
+    backgroundColor: "#E0E0E0",
   },
-  buttonIcon: {
-    width: 30,
-    height: 30,
-    marginBottom: 8,
-    resizeMode: "contain",
+  separatorText: {
+    marginHorizontal: 15,
+    color: "#888",
+    fontSize: 14,
   },
-  buttonTextDark: {
-    color: "#000000ff",
-    fontWeight: "bold",
-  },
-  buttonTextLight: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  promoContainer: {
-    marginHorizontal: 20,
-    marginTop: 20,
-    marginBottom: 30,
-    borderRadius: 20,
-    backgroundColor: "transparent",
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 5,
-  },
-  promoBanner: {
-    width: "100%",
-    height: 180,
-    resizeMode: "cover",
-    borderRadius: 20,
-  },
-  exploreSection: {
-    paddingHorizontal: 20,
-    paddingTop: 10,
-    backgroundColor: "#F4F4F4",
-  },
-  exploreTitle: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#000000ff",
-  },
-  exploreSubtitle: {
-    fontSize: 15,
-    color: "#000000ff",
-    marginBottom: 15,
-  },
-  carouselContainer: {
-    paddingBottom: 20,
-  },
-  card: {
-    width: 200,
-    height: 260,
-    marginRight: 15,
-    borderRadius: 15,
-    overflow: "hidden",
-    elevation: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3,
-  },
-  cardImage: {
-    width: "100%",
-    height: "100%",
-    borderRadius: 15,
-  },
-  navbar: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
+  socialButton: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    backgroundColor: "white",
-    paddingTop: 10,
-    paddingBottom: 10,
-    borderTopWidth: 1,
-    borderTopColor: "#E0E0E0",
-  },
-  navItem: {
     alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#E8E8E8",
+    paddingVertical: 15,
+    borderRadius: 12,
+    marginBottom: 12,
+    gap: 12,
   },
-  navText: {
-    fontSize: 12,
-    color: "#000000ff",
-    marginTop: 2,
+  socialButtonText: {
+    color: "#333",
+    fontSize: 16,
+    fontWeight: "500",
   },
 });

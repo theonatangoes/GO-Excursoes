@@ -4,9 +4,9 @@ import React, { useRef, useState } from "react";
 import {
   Dimensions,
   FlatList,
-  Image, // Importado para pegar a altura da barra de status
+  Image,
   Platform,
-  SafeAreaView, // Mantido para compatibilidade com iOS
+  SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
@@ -44,10 +44,13 @@ export default function DetalhesViagem() {
     itemVisiblePercentThreshold: 50,
   }).current;
 
+  // 🔹 1. FUNÇÃO PARA NAVEGAR PARA A TELA DE PAGAMENTO 🔹
+  const handleReservePress = () => {
+    router.push("/pagamento_porto");
+  };
+
   return (
-    // Usamos SafeAreaView que agora tem um padding manual para Android
     <SafeAreaView style={styles.safeArea}>
-      {/* TUDO está dentro da rolagem agora */}
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {/* CABEÇALHO */}
         <View style={styles.headerContainer}>
@@ -111,17 +114,67 @@ export default function DetalhesViagem() {
 
         {/* Sobre */}
         <View style={styles.aboutContainer}>
-          <Text style={styles.sectionTitle}>Sobre a hospedagem</Text>
-          <Text style={styles.description}>
+          <Text style={[styles.sectionTitle, styles.centeredText]}>
+            Sobre a hospedagem
+          </Text>
+          <Text style={[styles.description, styles.centeredText]}>
             O Hotel Fênix Porto Seguro é uma opção aconchegante para quem busca
             conforto e praticidade na cidade. Localizado próximo às principais
             praias e pontos turísticos, oferece ambiente agradável, bom
             atendimento.
           </Text>
+
+          {/* SEÇÃO DE INFORMAÇÕES COMPLETA (AGORA ÚNICA) */}
+          <View style={styles.embeddedFullInfoCard}>
+            <View style={styles.bannerTopSection}>
+              <View style={styles.iconContainer}>
+                <Ionicons name="bus" size={30} color="#000" />
+              </View>
+              <Text style={styles.bannerTitle}>PORTO SEGURO</Text>
+            </View>
+            <View style={styles.bannerBottomSection}>
+              <View style={styles.bannerRow}>
+                <View style={styles.bannerColumn}>
+                  <Text style={styles.bannerLabel}>LOCAL DE PARTIDA:</Text>
+                  <Text style={styles.bannerValue}>
+                    Rodoviária de Juazeiro do Norte
+                  </Text>
+                </View>
+                <View style={styles.bannerColumn}>
+                  <Text style={styles.bannerLabel}>DATA:</Text>
+                  <Text style={styles.bannerValue}>19/10/2025</Text>
+                </View>
+                <View style={styles.bannerColumn}>
+                  <Text style={styles.bannerLabel}>HORA:</Text>
+                  <Text style={styles.bannerValue}>20:00H</Text>
+                </View>
+              </View>
+              <View style={styles.bannerRow}>
+                <View style={styles.bannerColumn}>
+                  <Text style={styles.bannerLabel}>LOCAL DE RETORNO:</Text>
+                  <Text style={styles.bannerValue}>
+                    Hotel Fenix Porto Seguro
+                  </Text>
+                </View>
+                <View style={styles.bannerColumn}>
+                  <Text style={styles.bannerLabel}>DATA:</Text>
+                  <Text style={styles.bannerValue}>23/10/2025</Text>
+                </View>
+                <View style={styles.bannerColumn}>
+                  <Text style={styles.bannerLabel}>HORA:</Text>
+                  <Text style={styles.bannerValue}>16:00H</Text>
+                </View>
+              </View>
+            </View>
+          </View>
         </View>
 
         {/* Botão de Reserva */}
-        <TouchableOpacity style={styles.reserveButton}>
+        {/* 🔹 2. ONPRESS ADICIONADO AO BOTÃO 🔹 */}
+        <TouchableOpacity
+          style={styles.reserveButton}
+          onPress={handleReservePress}
+        >
           <Text style={styles.reserveButtonText}>Reservar</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -133,12 +186,9 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: "#fff",
-    // Esta linha é a MUDANÇA PRINCIPAL:
-    // Adiciona um espaço no topo igual à altura da barra de status no Android.
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
   contentContainer: {
-    // Espaçamento só nas laterais e embaixo, o de cima agora é no safeArea
     paddingHorizontal: SCREEN_PADDING,
     paddingBottom: 40,
   },
@@ -147,7 +197,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingVertical: 10,
-    marginBottom: 20, // Espaço entre o cabeçalho e o resto do conteúdo
+    marginBottom: 20,
   },
   headerSide: {
     width: 28,
@@ -166,6 +216,45 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#000000ff",
     marginTop: 4,
+  },
+  bannerTopSection: {
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+  },
+  iconContainer: {
+    backgroundColor: "#FFD700",
+    padding: 10,
+    borderRadius: 8,
+    marginRight: 15,
+  },
+  bannerTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#000",
+  },
+  bannerBottomSection: {
+    backgroundColor: "#0902B0",
+    padding: 15,
+  },
+  bannerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+  bannerColumn: {
+    flex: 1,
+  },
+  bannerLabel: {
+    color: "#FFD700",
+    fontWeight: "bold",
+    fontSize: 14,
+    marginBottom: 4,
+  },
+  bannerValue: {
+    color: "#fff",
+    fontSize: 14,
   },
   hotelInfoContainer: {
     marginBottom: 20,
@@ -232,6 +321,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     color: "#000000ff",
+    marginBottom: 20,
+  },
+  centeredText: {
+    textAlign: "center",
+  },
+  embeddedFullInfoCard: {
+    marginHorizontal: -SCREEN_PADDING,
+    marginTop: 20,
   },
   reserveButton: {
     backgroundColor: "#FFD700",
