@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Image,
   SafeAreaView,
@@ -37,17 +37,16 @@ export default function PagamentoScreen() {
   const router = useRouter();
   const [selectedMethod, setSelectedMethod] = useState("mastercard");
 
-  // 🔹 FUNÇÃO ATUALIZADA PARA NAVEGAR 🔹
   const handleConfirmPayment = () => {
     console.log(`Pagamento confirmado com: ${selectedMethod}`);
-    // Navega para a tela de pagamento aprovado
+
     router.replace("/pagamento_aprovado");
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {/* CABEÇALHO */}
+ 
         <View style={styles.header}>
           <Text style={styles.headerTitleMain}>Método</Text>
           <View style={styles.headerSubtitleRow}>
@@ -59,7 +58,6 @@ export default function PagamentoScreen() {
           </View>
         </View>
 
-        {/* Métodos de pagamento */}
         <View style={styles.paymentOptionsContainer}>
           {paymentMethods.map((method) => (
             <TouchableOpacity
@@ -81,7 +79,6 @@ export default function PagamentoScreen() {
           ))}
         </View>
 
-        {/* Imagem principal */}
         <View style={styles.summaryCardContainer}>
           <Image
             source={require("../assets/images/Pagementoporto.png")}
@@ -90,7 +87,6 @@ export default function PagamentoScreen() {
           />
         </View>
 
-        {/* Detalhamento de Custos */}
         <View style={styles.costBreakdown}>
           <View style={styles.costRow}>
             <Text style={styles.costLabel}>Valor por pessoa</Text>
@@ -108,7 +104,6 @@ export default function PagamentoScreen() {
         </View>
       </ScrollView>
 
-      {/* Botão Confirmar */}
       <View style={styles.footer}>
         <TouchableOpacity
           style={styles.confirmButton}

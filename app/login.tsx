@@ -1,6 +1,6 @@
 import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Image,
   KeyboardAvoidingView,
@@ -18,10 +18,9 @@ export default function LoginScreen() {
   const [isPasswordVisible, setPasswordVisible] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
-  // Esta função já está correta
   const handleLogin = () => {
     console.log("Navegando para a tela de excursões...");
-    // A rota '/excursões' corresponde ao arquivo app/excursões.tsx
+    
     router.replace("/excursoes");
   };
 

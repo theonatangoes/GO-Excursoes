@@ -6,19 +6,16 @@ export default function WelcomeScreen() {
 
   const handleRegister = () => {
     console.log("Navegando para a tela de criar conta...");
-    // A rota '/criarconta' corresponde ao arquivo app/criarconta.tsx
     router.push("/criarconta");
   };
 
   const handleLogin = () => {
     console.log("Navegando para Login...");
-    // router.push('/login'); // Você pode ajustar a rota de login aqui também
     router.push("/login");
   };
 
   return (
     <View style={styles.container}>
-      {/* Topo Amarelo */}
       <View style={styles.topSection}>
         <Image
           source={require("../assets/images/GO VIAGENS logo 1.png")}
@@ -26,7 +23,6 @@ export default function WelcomeScreen() {
         />
       </View>
 
-      {/* Parte Inferior Azul */}
       <View style={styles.bottomSection}>
         <View style={styles.textContainer}>
           <Text style={styles.title}>Bem Vindo</Text>
@@ -40,7 +36,7 @@ export default function WelcomeScreen() {
         <View style={styles.buttonRow}>
           <TouchableOpacity
             style={styles.registerButton}
-            onPress={handleRegister} // Esta função agora navega corretamente
+            onPress={handleRegister} 
             activeOpacity={0.85}
           >
             <Text style={styles.registerText}>Registrar</Text>
@@ -60,7 +56,6 @@ export default function WelcomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  // Layout base
   container: {
     flex: 1,
     backgroundColor: "#FFE600",
@@ -87,7 +82,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
 
-  // Textos
   textContainer: {
     alignItems: "flex-start",
   },
@@ -106,7 +100,6 @@ const styles = StyleSheet.create({
     marginBottom: 45,
   },
 
-  // Botões
   buttonRow: {
     flexDirection: "row",
     justifyContent: "space-between",

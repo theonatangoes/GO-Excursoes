@@ -9,7 +9,6 @@ import {
   View,
 } from "react-native";
 
-// DADOS DO CARROSSEL ATUALIZADOS PARA AS TRILHAS
 const explorarData = [
   {
     id: "diamantina",
@@ -25,11 +24,9 @@ const explorarData = [
   },
 ];
 
-// COMPONENTE RENOMEADO PARA TRILHASSCREEN
 export default function TrilhasScreen() {
   const router = useRouter();
 
-  // 🔹 FUNÇÃO ATUALIZADA PARA NAVEGAR 🔹
   const handleCardPress = (itemId: string) => {
     if (itemId === "diamantina") {
       router.push("/detalhes_trilha");
@@ -38,7 +35,6 @@ export default function TrilhasScreen() {
     }
   };
 
-  // Função para navegar de volta para a tela de excursões
   const navigateToExcursoes = () => {
     router.replace("/excursoes");
   };
@@ -49,7 +45,6 @@ export default function TrilhasScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 100 }}
       >
-        {/* Cabeçalho amarelo */}
         <View style={styles.headerYellow}>
           <View style={styles.headerContainer}>
             <View>
@@ -63,7 +58,6 @@ export default function TrilhasScreen() {
             />
           </View>
 
-          {/* BOTÕES DE MENU COM CORES INVERTIDAS */}
           <View style={styles.menuContainer}>
             <TouchableOpacity
               style={styles.menuButtonDark}
@@ -86,7 +80,6 @@ export default function TrilhasScreen() {
           </View>
         </View>
 
-        {/* Propaganda */}
         <TouchableOpacity style={styles.promoContainer}>
           <Image
             source={require("../assets/images/Propaganda.png")}
@@ -94,7 +87,6 @@ export default function TrilhasScreen() {
           />
         </TouchableOpacity>
 
-        {/* Seção Explorar */}
         <View style={styles.exploreSection}>
           <Text style={styles.exploreTitle}>Explorar Trilhas</Text>
           <Text style={styles.exploreSubtitle}>
@@ -119,7 +111,6 @@ export default function TrilhasScreen() {
         </View>
       </ScrollView>
 
-      {/* Barra de Navegação Inferior */}
       <View style={styles.navbar}>
         <TouchableOpacity
           style={styles.navItem}
@@ -142,7 +133,6 @@ export default function TrilhasScreen() {
           <Text style={styles.navText}>Notificações</Text>
         </TouchableOpacity>
 
-        {/* ########## CÓDIGO CORRIGIDO AQUI ########## */}
         <TouchableOpacity
           style={styles.navItem}
           onPress={() => router.push("/perfil")}
@@ -150,13 +140,12 @@ export default function TrilhasScreen() {
           <Feather name="user" size={24} color="#333" />
           <Text style={styles.navText}>Perfil</Text>
         </TouchableOpacity>
-        {/* ############################################# */}
+        
       </View>
     </View>
   );
 }
 
-// Estilos
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
@@ -196,7 +185,7 @@ const styles = StyleSheet.create({
   },
   menuButtonLight: {
     flex: 1,
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    backgroundColor: "rgba(255, 255, 255, 0.48)",
     padding: 20,
     borderRadius: 20,
     alignItems: "center",

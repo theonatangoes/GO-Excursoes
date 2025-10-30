@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "netflix-mobile",
-    "slug": "netflix-mobile",
+    "name": "go-excursoes",
+    "slug": "go-excursoes",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "netflixmobile",
+    "icon": "assets/images/GO VIAGENS logo 1.png",
+    "scheme": "goexcursoes",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {

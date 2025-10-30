@@ -1,6 +1,6 @@
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Image,
   KeyboardAvoidingView,
@@ -21,7 +21,6 @@ export default function PerfilUsuarioScreen() {
 
   const handleUpdateProfile = () => {
     console.log("Tentativa de atualizar perfil...");
-    // Adicione a lógica para salvar as alterações do perfil
   };
 
   return (
@@ -30,7 +29,6 @@ export default function PerfilUsuarioScreen() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardAvoiding}
       >
-        {/* Cabeçalho */}
         <View style={styles.header}>
           <TouchableOpacity
             onPress={() => router.back()}
@@ -45,21 +43,18 @@ export default function PerfilUsuarioScreen() {
           contentContainerStyle={styles.scrollContainer}
           showsVerticalScrollIndicator={false}
         >
-          {/* Card do Formulário */}
           <View style={styles.formCard}>
-            {/* Imagem de Perfil */}
             <Image
-              source={require("../assets/images/avatar.png")} // <-- Este caminho está CORRETO para a sua estrutura de pastas
+              source={require("../assets/images/avatar.png")} 
               style={styles.avatar}
             />
-            {/* Campos do Formulário */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Nome Completo</Text>
               <View style={styles.inputWrapper}>
                 <TextInput
                   style={styles.textInput}
                   placeholder="Digite seu nome completo"
-                  defaultValue="Theo Natan" // Valor de exemplo
+                  defaultValue="Theo Natan" 
                   placeholderTextColor="#999"
                 />
               </View>
@@ -70,7 +65,7 @@ export default function PerfilUsuarioScreen() {
                 <TextInput
                   style={styles.textInput}
                   placeholder="seuemail@exemplo.com"
-                  defaultValue="teste123@gmail.com" // Valor de exemplo
+                  defaultValue="teste123@gmail.com" 
                   keyboardType="email-address"
                   autoCapitalize="none"
                   placeholderTextColor="#999"
@@ -83,7 +78,7 @@ export default function PerfilUsuarioScreen() {
                 <TextInput
                   style={styles.textInput}
                   placeholder="DD/MM/AAAA"
-                  defaultValue="27/04/2005" // Valor de exemplo
+                  defaultValue="27/04/2005" 
                   placeholderTextColor="#999"
                 />
                 <Feather
@@ -104,7 +99,7 @@ export default function PerfilUsuarioScreen() {
                 <TextInput
                   style={[styles.textInput, styles.phoneInput]}
                   placeholder="(00) 9 0000-0000"
-                  defaultValue="(88) 9 9205-3874" // Valor de exemplo
+                  defaultValue="(88) 9 9205-3874" 
                   keyboardType="phone-pad"
                   placeholderTextColor="#999"
                 />
@@ -116,7 +111,7 @@ export default function PerfilUsuarioScreen() {
                 <TextInput
                   style={styles.textInput}
                   placeholder="********"
-                  defaultValue="********" // Valor de exemplo
+                  defaultValue="********" 
                   secureTextEntry={!isPasswordVisible}
                   placeholderTextColor="#999"
                 />
@@ -132,7 +127,7 @@ export default function PerfilUsuarioScreen() {
                 </TouchableOpacity>
               </View>
             </View>
-            {/* Botão de Atualizar */}
+
             <TouchableOpacity
               style={styles.submitButton}
               onPress={handleUpdateProfile}
@@ -149,7 +144,7 @@ export default function PerfilUsuarioScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#F4F4F4", // Fundo cinza claro
+    backgroundColor: "#F4F4F4", 
     paddingTop: StatusBar.currentHeight,
   },
   keyboardAvoiding: {
@@ -158,54 +153,54 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center", // Centraliza o título
+    justifyContent: "center", 
     paddingVertical: 20,
-    paddingHorizontal: 20, // Padding lateral
-    position: "relative", // Para posicionar o botão de voltar
+    paddingHorizontal: 20, 
+    position: "relative", 
   },
   backButton: {
     position: "absolute",
-    left: 20, // Alinha à esquerda
-    padding: 10, // Área de toque
+    left: 20, 
+    padding: 10, 
   },
   headerTitle: {
     fontSize: 28,
     fontWeight: "bold",
     textAlign: "center",
-    lineHeight: 34, // Ajusta o espaçamento entre linhas se o título quebrar
+    lineHeight: 34, 
   },
   scrollContainer: {
     flexGrow: 1,
-    justifyContent: "center", // Centraliza o card verticalmente
+    justifyContent: "center", 
     paddingHorizontal: 20,
-    paddingBottom: 40, // Espaço no final
+    paddingBottom: 40, 
   },
   formCard: {
     backgroundColor: "#FFFFFF",
     borderRadius: 25,
     padding: 25,
-    paddingTop: 80, // Espaço extra no topo para a imagem de avatar sobrepor
-    marginTop: 60, // Margem para descer o card e dar espaço para o avatar
-    alignItems: "center", // Centraliza o avatar
+    paddingTop: 80, 
+    marginTop: 60,
+    alignItems: "center", 
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 5,
-    position: "relative", // Para posicionar o avatar
+    position: "relative", 
   },
   avatar: {
     width: 120,
     height: 120,
-    borderRadius: 60, // Metade da largura/altura para ser um círculo
+    borderRadius: 60, 
     position: "absolute",
-    top: -60, // Metade da altura para ficar metade dentro, metade fora
-    borderWidth: 4, // Borda se necessário
-    borderColor: "#F4F4F4", // Cor igual ao fundo
+    top: -60, 
+    borderWidth: 4, 
+    borderColor: "#F4F4F4", 
   },
   inputGroup: {
     marginBottom: 20,
-    width: "100%", // Garante que os inputs ocupem toda a largura do card
+    width: "100%", 
   },
   label: {
     fontSize: 14,
@@ -246,12 +241,12 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   submitButton: {
-    backgroundColor: "#0902B0", // Azul escuro
+    backgroundColor: "#0902B0", 
     paddingVertical: 15,
     borderRadius: 12,
     alignItems: "center",
     marginTop: 10,
-    width: "100%", // Ocupa toda a largura do card
+    width: "100%", 
   },
   submitButtonText: {
     color: "#FFFFFF",

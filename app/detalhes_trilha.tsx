@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   Dimensions,
   FlatList,
@@ -32,7 +32,6 @@ export default function DetalhesTrilhas() {
   const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // 🔹 1. FUNÇÃO PARA NAVEGAR PARA A TELA DE PAGAMENTO 🔹
   const handleReservePress = () => {
     router.push("/pagamento_chapada");
   };
@@ -52,7 +51,6 @@ export default function DetalhesTrilhas() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        {/* CABEÇALHO REESTRUTURADO */}
         <View style={styles.headerContainer}>
           <Text style={styles.mainTitle}>Chapada Diamantina</Text>
           <View style={styles.subtitleRow}>
@@ -64,7 +62,6 @@ export default function DetalhesTrilhas() {
           </View>
         </View>
 
-        {/* Informações do Local */}
         <View style={styles.hotelInfoContainer}>
           <View style={styles.hotelNameContainer}>
             <Image
@@ -82,7 +79,6 @@ export default function DetalhesTrilhas() {
           />
         </View>
 
-        {/* Carrossel */}
         <View style={styles.carouselContainer}>
           <FlatList
             data={carouselImages}
@@ -109,7 +105,6 @@ export default function DetalhesTrilhas() {
           </View>
         </View>
 
-        {/* Sobre */}
         <View style={styles.aboutContainer}>
           <Text style={[styles.sectionTitle, styles.centeredText]}>
             Sobre a trilha
@@ -121,7 +116,6 @@ export default function DetalhesTrilhas() {
             visitantes do mundo.
           </Text>
 
-          {/* SEÇÃO DE INFORMAÇÕES COMPLETA */}
           <View style={styles.embeddedFullInfoCard}>
             <View style={styles.bannerTopSection}>
               <View style={styles.iconContainer}>
@@ -166,8 +160,6 @@ export default function DetalhesTrilhas() {
           </View>
         </View>
 
-        {/* Botão de Reserva */}
-        {/* 🔹 2. ONPRESS ADICIONADO AO BOTÃO 🔹 */}
         <TouchableOpacity
           style={styles.reserveButton}
           onPress={handleReservePress}

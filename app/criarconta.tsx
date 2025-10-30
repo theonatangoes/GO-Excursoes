@@ -1,6 +1,6 @@
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Image,
   KeyboardAvoidingView,
@@ -14,14 +14,11 @@ import {
 } from "react-native";
 
 export default function RegisterScreen() {
-  // Ou o nome correto do seu componente
   const router = useRouter();
   const [isPasswordVisible, setPasswordVisible] = useState(false);
 
-  // 🔹 FUNÇÃO ATUALIZADA PARA NAVEGAR 🔹
   const handleRegister = () => {
     console.log("Navegando para Excursões após registro...");
-    // A rota '/excursoes' deve corresponder ao seu arquivo app/excursoes.tsx
     router.replace("/excursoes");
   };
 
@@ -45,7 +42,7 @@ export default function RegisterScreen() {
 
         <View style={styles.formContainer}>
           <TouchableOpacity
-            onPress={() => router.back()} // Mantém o voltar para a tela anterior
+            onPress={() => router.back()} 
             style={styles.backButton}
           >
             <Ionicons name="arrow-back" size={24} color="#333" />
@@ -59,7 +56,6 @@ export default function RegisterScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* Campos do Formulário */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Nome Completo</Text>
             <View style={styles.inputWrapper}>
@@ -139,10 +135,9 @@ export default function RegisterScreen() {
             </View>
           </View>
 
-          {/* Botão de Registrar */}
           <TouchableOpacity
             style={styles.submitButton}
-            onPress={handleRegister} // Esta função agora navega corretamente
+            onPress={handleRegister} 
           >
             <Text style={styles.submitButtonText}>Registrar</Text>
           </TouchableOpacity>

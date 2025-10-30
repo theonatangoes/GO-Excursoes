@@ -1,10 +1,7 @@
-// Arquivo: app/(tabs)/minhas_viagens.tsx
-
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React from "react";
 import {
-  Image, // Alterado de ImageBackground para Image, pois não há mais texto sobreposto
+  Image,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -14,7 +11,6 @@ import {
   View,
 } from "react-native";
 
-// Dados das viagens
 const tripsData = [
   {
     id: "porto-seguro",
@@ -43,7 +39,6 @@ export default function MinhasViagensScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      {/* 🔹 CABEÇALHO ATUALIZADO COM SETA 🔹 */}
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => router.back()}
@@ -52,7 +47,6 @@ export default function MinhasViagensScreen() {
           <Ionicons name="arrow-back" size={28} color="#000" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Minhas Viagens</Text>
-        {/* Espaço vazio para manter o título centralizado */}
         <View style={{ width: 28 }} />
       </View>
 
@@ -63,7 +57,6 @@ export default function MinhasViagensScreen() {
             activeOpacity={0.9}
             onPress={() => handleTripPress(trip.id)}
           >
-            {/* 🔹 USANDO IMAGE NORMAL SEM TEXTO POR CIMA 🔹 */}
             <Image source={trip.image} style={styles.cardImage} />
           </TouchableOpacity>
         ))}
@@ -72,7 +65,6 @@ export default function MinhasViagensScreen() {
   );
 }
 
-// 🔹 ESTILOS ATUALIZADOS 🔹
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -80,9 +72,9 @@ const styles = StyleSheet.create({
     paddingTop: StatusBar.currentHeight,
   },
   header: {
-    flexDirection: "row", // Alinha itens horizontalmente
+    flexDirection: "row", 
     alignItems: "center",
-    justifyContent: "space-between", // Empurra a seta para um lado e o View vazio para o outro
+    justifyContent: "space-between", 
     paddingVertical: 20,
     paddingHorizontal: 20,
   },
@@ -92,7 +84,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   backButton: {
-    // Não precisa de posicionamento absoluto mais
   },
   scrollContainer: {
     paddingHorizontal: 20,

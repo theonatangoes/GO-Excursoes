@@ -1,4 +1,4 @@
-import { Feather } from "@expo/vector-icons"; // <-- ADICIONADO
+import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import {
   Image,
@@ -43,9 +43,8 @@ export default function ExcursoesScreen() {
     <View style={styles.screen}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 100 }} // <-- AJUSTADO
+        contentContainerStyle={{ paddingBottom: 100 }} 
       >
-        {/* Cabeçalho amarelo */}
         <View style={styles.headerYellow}>
           <View style={styles.headerContainer}>
             <View>
@@ -57,7 +56,7 @@ export default function ExcursoesScreen() {
               style={styles.logo}
             />
           </View>
-          {/* Botões de Menu */}
+          
           <View style={styles.menuContainer}>
             <TouchableOpacity style={styles.menuButtonLight}>
               <Image
@@ -78,14 +77,14 @@ export default function ExcursoesScreen() {
             </TouchableOpacity>
           </View>
         </View>
-        {/* Propaganda */}
+       
         <TouchableOpacity style={styles.promoContainer}>
           <Image
             source={require("../assets/images/Propaganda.png")}
             style={styles.promoBanner}
           />
         </TouchableOpacity>
-        {/* Seção Explorar */}
+        
         <View style={styles.exploreSection}>
           <Text style={styles.exploreTitle}>Explorar Excursões</Text>
           <Text style={styles.exploreSubtitle}>
@@ -109,7 +108,6 @@ export default function ExcursoesScreen() {
         </View>
       </ScrollView>
 
-      {/* ########## BARRA DE NAVEGAÇÃO ADICIONADA AQUI ########## */}
       <View style={styles.navbar}>
         <TouchableOpacity
           style={styles.navItem}
@@ -140,12 +138,11 @@ export default function ExcursoesScreen() {
           <Text style={styles.navText}>Perfil</Text>
         </TouchableOpacity>
       </View>
-      {/* ####################################################### */}
+      
     </View>
   );
 }
 
-// Estilos
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
@@ -185,7 +182,7 @@ const styles = StyleSheet.create({
   },
   menuButtonLight: {
     flex: 1,
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    backgroundColor: "rgba(255, 255, 255, 0.48)",
     padding: 20,
     borderRadius: 20,
     alignItems: "center",
@@ -269,7 +266,6 @@ const styles = StyleSheet.create({
     height: "100%",
     borderRadius: 15,
   },
-  // --- ESTILOS DA NAVBAR ADICIONADOS ---
   navbar: {
     position: "absolute",
     bottom: 0,

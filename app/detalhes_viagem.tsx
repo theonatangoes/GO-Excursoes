@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   Dimensions,
   FlatList,
@@ -44,7 +44,6 @@ export default function DetalhesViagem() {
     itemVisiblePercentThreshold: 50,
   }).current;
 
-  // 🔹 1. FUNÇÃO PARA NAVEGAR PARA A TELA DE PAGAMENTO 🔹
   const handleReservePress = () => {
     router.push("/pagamento_porto");
   };
@@ -52,7 +51,7 @@ export default function DetalhesViagem() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        {/* CABEÇALHO */}
+
         <View style={styles.headerContainer}>
           <TouchableOpacity
             onPress={() => router.back()}
@@ -67,7 +66,6 @@ export default function DetalhesViagem() {
           <View style={styles.headerSide} />
         </View>
 
-        {/* Informações do Hotel */}
         <View style={styles.hotelInfoContainer}>
           <View style={styles.hotelNameContainer}>
             <Image
@@ -85,7 +83,6 @@ export default function DetalhesViagem() {
           />
         </View>
 
-        {/* Carrossel */}
         <View style={styles.carouselContainer}>
           <FlatList
             data={carouselImages}
@@ -112,7 +109,6 @@ export default function DetalhesViagem() {
           </View>
         </View>
 
-        {/* Sobre */}
         <View style={styles.aboutContainer}>
           <Text style={[styles.sectionTitle, styles.centeredText]}>
             Sobre a hospedagem
@@ -124,7 +120,6 @@ export default function DetalhesViagem() {
             atendimento.
           </Text>
 
-          {/* SEÇÃO DE INFORMAÇÕES COMPLETA (AGORA ÚNICA) */}
           <View style={styles.embeddedFullInfoCard}>
             <View style={styles.bannerTopSection}>
               <View style={styles.iconContainer}>
@@ -169,8 +164,6 @@ export default function DetalhesViagem() {
           </View>
         </View>
 
-        {/* Botão de Reserva */}
-        {/* 🔹 2. ONPRESS ADICIONADO AO BOTÃO 🔹 */}
         <TouchableOpacity
           style={styles.reserveButton}
           onPress={handleReservePress}

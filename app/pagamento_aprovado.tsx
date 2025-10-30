@@ -1,5 +1,4 @@
 import { useRouter } from "expo-router";
-import React from "react";
 import {
   Dimensions,
   Image,
@@ -40,12 +39,12 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    justifyContent: "flex-start", // 🔹 começa do topo
+    justifyContent: "flex-start", 
     alignItems: "center",
   },
   confirmationImage: {
     width: width,
-    height: height * 0.95, // 🔹 imagem ocupa 95% da tela
-    marginTop: 200, // 🔹 desce a imagem sem ativar scroll
+    height: height * 0.95, 
+    marginTop: 200, 
   },
 });
