@@ -1,6 +1,8 @@
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react"; // Importar
 import {
+  ActivityIndicator,
   Image,
   ScrollView,
   StyleSheet,
@@ -9,27 +11,49 @@ import {
   View,
 } from "react-native";
 
-const explorarData = [
-  {
-    id: "diamantina",
-    imagem: require("../assets/images/Diamantina.png"),
-  },
-  {
-    id: "dois-irmaos",
-    imagem: require("../assets/images/DoisIrmãos.png"),
-  },
-  {
-    id: "naufragados",
-    imagem: require("../assets/images/Naufragados.png"),
-  },
-];
+// 1. DEFINA A URL DA SUA API (use seu IP!)
+const API_URL = "http://10.0.0.66:3000"; // ❗️ SUBSTITUA PELO SEU IP
+
+// 2. DEFINA A INTERFACE
+interface Trilha {
+  id: string;
+  titulo: string;
+  imagemCapaUrl: string;
+}
 
 export default function TrilhasScreen() {
   const router = useRouter();
 
+  // 3. CRIE OS ESTADOS
+  const [trilhas, setTrilhas] = useState<Trilha[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // 4. CRIE O useEffect PARA BUSCAR OS DADOS
+  useEffect(() => {
+    const fetchTrilhas = async () => {
+      try {
+        const response = await fetch(`${API_URL}/trilhas`);
+        if (!response.ok) {
+          throw new Error("Falha ao buscar dados.");
+        }
+        const data: Trilha[] = await response.json();
+        setTrilhas(data);
+      } catch (e) {
+        setError("Não foi possível carregar as trilhas.");
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTrilhas();
+  }, []);
+
   const handleCardPress = (itemId: string) => {
+    // ❗️ MUDANÇA IMPORTANTE: Passando o ID para a próxima tela
     if (itemId === "diamantina") {
-      router.push("/detalhes_trilha");
+      router.push("/detalhes_trilha"); // Mantido, mas idealmente passaria o ID
     } else {
       console.log(`Navegação para ${itemId} ainda não implementada.`);
     }
@@ -37,6 +61,44 @@ export default function TrilhasScreen() {
 
   const navigateToExcursoes = () => {
     router.replace("/excursoes");
+  };
+
+  // 5. ATUALIZE O RENDER
+  const renderExploreContent = () => {
+    if (loading) {
+      return (
+        <ActivityIndicator
+          size="large"
+          color="#0902B0"
+          style={{ marginTop: 20, height: 260 }}
+        />
+      );
+    }
+
+    if (error) {
+      return <Text style={styles.errorText}>{error}</Text>;
+    }
+
+    return (
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.carouselContainer}
+      >
+        {trilhas.map((item) => (
+          <TouchableOpacity
+            key={item.id}
+            style={styles.card}
+            onPress={() => handleCardPress(item.id)}
+          >
+            <Image
+              source={{ uri: item.imagemCapaUrl }} // ❗️ MUDANÇA AQUI
+              style={styles.cardImage}
+            />
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    );
   };
 
   return (
@@ -57,7 +119,6 @@ export default function TrilhasScreen() {
               style={styles.logo}
             />
           </View>
-
           <View style={styles.menuContainer}>
             <TouchableOpacity
               style={styles.menuButtonDark}
@@ -79,35 +140,19 @@ export default function TrilhasScreen() {
             </TouchableOpacity>
           </View>
         </View>
-
         <TouchableOpacity style={styles.promoContainer}>
           <Image
             source={require("../assets/images/Propaganda.png")}
             style={styles.promoBanner}
           />
         </TouchableOpacity>
-
         <View style={styles.exploreSection}>
           <Text style={styles.exploreTitle}>Explorar Trilhas</Text>
           <Text style={styles.exploreSubtitle}>
             Descubra lugares e experiências!
           </Text>
 
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.carouselContainer}
-          >
-            {explorarData.map((item) => (
-              <TouchableOpacity
-                key={item.id}
-                style={styles.card}
-                onPress={() => handleCardPress(item.id)}
-              >
-                <Image source={item.imagem} style={styles.cardImage} />
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+          {renderExploreContent()}
         </View>
       </ScrollView>
 
@@ -132,7 +177,6 @@ export default function TrilhasScreen() {
           <Feather name="bell" size={24} color="#333" />
           <Text style={styles.navText}>Notificações</Text>
         </TouchableOpacity>
-
         <TouchableOpacity
           style={styles.navItem}
           onPress={() => router.push("/perfil")}
@@ -140,13 +184,13 @@ export default function TrilhasScreen() {
           <Feather name="user" size={24} color="#333" />
           <Text style={styles.navText}>Perfil</Text>
         </TouchableOpacity>
-        
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  // ... (seus estilos existentes)
   screen: {
     flex: 1,
     backgroundColor: "#F4F4F4",
@@ -185,7 +229,7 @@ const styles = StyleSheet.create({
   },
   menuButtonLight: {
     flex: 1,
-    backgroundColor: "rgba(255, 255, 255, 0.48)",
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
     padding: 20,
     borderRadius: 20,
     alignItems: "center",
@@ -268,6 +312,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     borderRadius: 15,
+    backgroundColor: "#e0e0e0",
   },
   navbar: {
     position: "absolute",
@@ -289,5 +334,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#000000ff",
     marginTop: 2,
+  },
+  errorText: {
+    textAlign: "center",
+    color: "red",
+    marginTop: 20,
+    fontSize: 16,
+    height: 260,
   },
 });

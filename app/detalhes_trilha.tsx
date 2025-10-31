@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Dimensions,
   FlatList,
   Image,
@@ -16,21 +17,68 @@ import {
   ViewToken,
 } from "react-native";
 
+// 1. DEFINA A URL DA SUA API (use seu IP!)
+const API_URL = "http://10.0.0.66:3000"; // ❗️ SUBSTITUA PELO SEU IP
+
 const { width } = Dimensions.get("window");
 const SCREEN_PADDING = 20;
 const ITEM_WIDTH = width - SCREEN_PADDING * 2;
 
-const carouselImages = [
-  require("../assets/images/chapada1.png"),
-  require("../assets/images/chapada2.png"),
-  require("../assets/images/chapada3.png"),
-  require("../assets/images/chapada4.png"),
-  require("../assets/images/chapada5.png"),
-];
+// 2. DEFINA A INTERFACE COMPLETA DA TRILHA
+interface TrilhaDetalhes {
+  id: string;
+  titulo: string;
+  localizacao: string;
+  estrelas: number;
+  imagensCarousel: string[];
+  sobre: string;
+  partida: {
+    local: string;
+    data: string;
+    hora: string;
+  };
+  retorno: {
+    local: string;
+    data: string;
+    hora: string;
+  };
+  precoPorPessoa: number;
+}
 
 export default function DetalhesTrilhas() {
   const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
+
+  // 3. CRIE OS ESTADOS
+  const [trilha, setTrilha] = useState<TrilhaDetalhes | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // 4. CRIE O useEffect PARA BUSCAR OS DADOS
+  useEffect(() => {
+    const fetchTrilha = async () => {
+      try {
+        // ❗️ ATENÇÃO: Hardcoded para 'diamantina'
+        // O ideal aqui é pegar o ID vindo da navegação
+        // const { id } = useLocalSearchParams();
+        // const response = await fetch(`${API_URL}/trilhas/${id}`);
+
+        const response = await fetch(`${API_URL}/trilhas/diamantina`);
+        if (!response.ok) {
+          throw new Error("Falha ao buscar dados da trilha.");
+        }
+        const data: TrilhaDetalhes = await response.json();
+        setTrilha(data);
+      } catch (e) {
+        setError("Não foi possível carregar os detalhes da trilha.");
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTrilha();
+  }, []);
 
   const handleReservePress = () => {
     router.push("/pagamento_chapada");
@@ -48,11 +96,34 @@ export default function DetalhesTrilhas() {
     itemVisiblePercentThreshold: 50,
   }).current;
 
+  // 5. LÓGICA DE RENDERIZAÇÃO
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <ActivityIndicator size="large" color="#0902B0" style={{ flex: 1 }} />
+      </SafeAreaView>
+    );
+  }
+
+  if (error || !trilha) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <Text style={styles.errorText}>{error}</Text>
+      </SafeAreaView>
+    );
+  }
+
+  // Define a imagem de estrelas com base no JSON
+  const starImage =
+    trilha.estrelas === 4
+      ? require("../assets/images/4estrelas.png")
+      : require("../assets/images/3estrelas.png"); // Adicione outras lógicas se precisar
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <View style={styles.headerContainer}>
-          <Text style={styles.mainTitle}>Chapada Diamantina</Text>
+          <Text style={styles.mainTitle}>{trilha.titulo}</Text>
           <View style={styles.subtitleRow}>
             <TouchableOpacity onPress={() => router.back()}>
               <Ionicons name="arrow-back" size={28} color="#333" />
@@ -68,22 +139,17 @@ export default function DetalhesTrilhas() {
               source={require("../assets/images/Verificado_1.png")}
               style={styles.verifiedIcon}
             />
-            <Text style={styles.hotelName}>Chapada Diamantina</Text>
+            <Text style={styles.hotelName}>{trilha.titulo}</Text>
           </View>
-          <Text style={styles.address}>
-            Parque Nacional da Chapada Diamantina, Lençóis, Bahia, Brasil
-          </Text>
-          <Image
-            source={require("../assets/images/4estrelas.png")}
-            style={styles.stars}
-          />
+          <Text style={styles.address}>{trilha.localizacao}</Text>
+          <Image source={starImage} style={styles.stars} />
         </View>
 
         <View style={styles.carouselContainer}>
           <FlatList
-            data={carouselImages}
+            data={trilha.imagensCarousel} // ❗️ MUDANÇA AQUI
             renderItem={({ item }) => (
-              <Image source={item} style={styles.carouselImage} />
+              <Image source={{ uri: item }} style={styles.carouselImage} /> // ❗️ MUDANÇA AQUI
             )}
             keyExtractor={(_, index) => index.toString()}
             horizontal
@@ -93,15 +159,20 @@ export default function DetalhesTrilhas() {
             viewabilityConfig={viewabilityConfig}
           />
           <View style={styles.paginationContainer}>
-            {carouselImages.map((_, index) => (
-              <View
-                key={index}
-                style={[
-                  styles.dot,
-                  index === activeIndex ? styles.activeDot : {},
-                ]}
-              />
-            ))}
+            {trilha.imagensCarousel.map(
+              (
+                _,
+                index // ❗️ MUDANÇA AQUI
+              ) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.dot,
+                    index === activeIndex ? styles.activeDot : {},
+                  ]}
+                />
+              )
+            )}
           </View>
         </View>
 
@@ -110,10 +181,7 @@ export default function DetalhesTrilhas() {
             Sobre a trilha
           </Text>
           <Text style={[styles.description, styles.centeredText]}>
-            A Chapada Diamantina é um dos destinos mais encantadores do Brasil,
-            localizada no coração da Bahia. Com paisagens de tirar o fôlego,
-            reúne cachoeiras imponentes, grutas, trilhas e mirantes que encantam
-            visitantes do mundo.
+            {trilha.sobre}
           </Text>
 
           <View style={styles.embeddedFullInfoCard}>
@@ -121,39 +189,37 @@ export default function DetalhesTrilhas() {
               <View style={styles.iconContainer}>
                 <Ionicons name="airplane" size={30} color="#000" />
               </View>
-              <Text style={styles.bannerTitle}>CHAPADA DIAMANTINA</Text>
+              <Text style={styles.bannerTitle}>
+                {trilha.titulo.toUpperCase()}
+              </Text>
             </View>
             <View style={styles.bannerBottomSection}>
               <View style={styles.bannerRow}>
                 <View style={styles.bannerColumn}>
                   <Text style={styles.bannerLabel}>LOCAL DE PARTIDA:</Text>
-                  <Text style={styles.bannerValue}>
-                    Aeroporto de Juazeiro do Norte
-                  </Text>
+                  <Text style={styles.bannerValue}>{trilha.partida.local}</Text>
                 </View>
                 <View style={styles.bannerColumn}>
                   <Text style={styles.bannerLabel}>DATA:</Text>
-                  <Text style={styles.bannerValue}>19/09/2025</Text>
+                  <Text style={styles.bannerValue}>{trilha.partida.data}</Text>
                 </View>
                 <View style={styles.bannerColumn}>
                   <Text style={styles.bannerLabel}>HORA:</Text>
-                  <Text style={styles.bannerValue}>03:00H</Text>
+                  <Text style={styles.bannerValue}>{trilha.partida.hora}</Text>
                 </View>
               </View>
               <View style={styles.bannerRow}>
                 <View style={styles.bannerColumn}>
                   <Text style={styles.bannerLabel}>LOCAL DE RETORNO:</Text>
-                  <Text style={styles.bannerValue}>
-                    Aeroporto Coronel Horácio
-                  </Text>
+                  <Text style={styles.bannerValue}>{trilha.retorno.local}</Text>
                 </View>
                 <View style={styles.bannerColumn}>
                   <Text style={styles.bannerLabel}>DATA:</Text>
-                  <Text style={styles.bannerValue}>23/09/2025</Text>
+                  <Text style={styles.bannerValue}>{trilha.retorno.data}</Text>
                 </View>
                 <View style={styles.bannerColumn}>
                   <Text style={styles.bannerLabel}>HORA:</Text>
-                  <Text style={styles.bannerValue}>22:00H</Text>
+                  <Text style={styles.bannerValue}>{trilha.retorno.hora}</Text>
                 </View>
               </View>
             </View>
@@ -172,6 +238,7 @@ export default function DetalhesTrilhas() {
 }
 
 const styles = StyleSheet.create({
+  // ... (seus estilos existentes)
   safeArea: {
     flex: 1,
     backgroundColor: "#fff",
@@ -277,6 +344,7 @@ const styles = StyleSheet.create({
     width: ITEM_WIDTH,
     height: 250,
     borderRadius: 15,
+    backgroundColor: "#e0e0e0",
   },
   paginationContainer: {
     flexDirection: "row",
@@ -325,5 +393,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "#000000ff",
+  },
+  errorText: {
+    textAlign: "center",
+    color: "red",
+    marginTop: 50,
+    fontSize: 16,
   },
 });

@@ -1,6 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
+import React, { useState } from "react";
 import {
+  ActivityIndicator,
   Image,
   SafeAreaView,
   ScrollView,
@@ -11,30 +13,90 @@ import {
   View,
 } from "react-native";
 
-const tripsData = [
-  {
-    id: "porto-seguro",
-    image: require("../../assets/images/MinhasViagens-Porto.png"),
-  },
-  {
-    id: "recife",
-    image: require("../../assets/images/MinhasViagens-Refice.png"),
-  },
-  {
-    id: "gramado",
-    image: require("../../assets/images/MinhasViagens-Gramado.png"),
-  },
-];
+// ❗️ Defina seu IP
+const API_URL = "http://10.0.0.66:3000";
+
+// ❗️ Nova interface
+interface MinhaViagem {
+  id: number; // ID único que o json-server cria
+  viagemId: string; // "porto-seguro" ou "diamantina"
+  titulo: string;
+  imagemUrl: string;
+}
 
 export default function MinhasViagensScreen() {
   const router = useRouter();
+  const [trips, setTrips] = useState<MinhaViagem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // ❗️ MUDANÇA: Usamos useFocusEffect em vez de useEffect
+  // Isso faz com que a lista seja RECARREGADA toda vez que o usuário
+  // VOLTAR para esta tela, mostrando a viagem que ele acabou de comprar!
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchMinhasViagens = async () => {
+        setLoading(true); // Mostra o loading toda vez que recarregar
+        try {
+          const response = await fetch(`${API_URL}/minhasViagens`);
+          if (!response.ok) {
+            throw new Error("Falha ao buscar dados.");
+          }
+          const data: MinhaViagem[] = await response.json();
+          setTrips(data);
+        } catch (e) {
+          setError("Não foi possível carregar suas viagens.");
+          console.error(e);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchMinhasViagens();
+    }, [])
+  );
 
   const handleTripPress = (tripId: string) => {
     if (tripId === "porto-seguro") {
       router.push("/detalhes_viagem");
+    } else if (tripId === "diamantina") {
+      router.push("/detalhes_trilha");
     } else {
       console.log(`Navegação para ${tripId} ainda não implementada.`);
     }
+  };
+
+  const renderTrips = () => {
+    if (loading) {
+      return <ActivityIndicator size="large" color="#0902B0" />;
+    }
+
+    if (error) {
+      return <Text style={styles.errorText}>{error}</Text>;
+    }
+
+    // ❗️ Se não tiver viagens, mostra uma mensagem
+    if (trips.length === 0) {
+      return (
+        <Text style={styles.emptyText}>
+          Você ainda não comprou nenhuma viagem.
+        </Text>
+      );
+    }
+
+    return (
+      <>
+        {trips.map((trip) => (
+          <TouchableOpacity
+            key={trip.id} // Use o ID único do item
+            activeOpacity={0.9}
+            onPress={() => handleTripPress(trip.viagemId)} // ❗️ NAVEGA COM O VIAGEMID
+          >
+            <Image source={{ uri: trip.imagemUrl }} style={styles.cardImage} />
+          </TouchableOpacity>
+        ))}
+      </>
+    );
   };
 
   return (
@@ -51,30 +113,23 @@ export default function MinhasViagensScreen() {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {tripsData.map((trip) => (
-          <TouchableOpacity
-            key={trip.id}
-            activeOpacity={0.9}
-            onPress={() => handleTripPress(trip.id)}
-          >
-            <Image source={trip.image} style={styles.cardImage} />
-          </TouchableOpacity>
-        ))}
+        {renderTrips()}
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  // ... (seus estilos existentes)
   safeArea: {
     flex: 1,
     backgroundColor: "#F4F4F4",
     paddingTop: StatusBar.currentHeight,
   },
   header: {
-    flexDirection: "row", 
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between", 
+    justifyContent: "space-between",
     paddingVertical: 20,
     paddingHorizontal: 20,
   },
@@ -83,8 +138,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
-  backButton: {
-  },
+  backButton: {},
   scrollContainer: {
     paddingHorizontal: 20,
     paddingBottom: 20,
@@ -94,5 +148,18 @@ const styles = StyleSheet.create({
     height: 220,
     borderRadius: 15,
     marginBottom: 20,
+    backgroundColor: "#e0e0e0",
+  },
+  errorText: {
+    textAlign: "center",
+    color: "red",
+    marginTop: 50,
+    fontSize: 16,
+  },
+  emptyText: {
+    textAlign: "center",
+    color: "#555",
+    marginTop: 50,
+    fontSize: 16,
   },
 });

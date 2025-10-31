@@ -2,6 +2,7 @@ import { Feather, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -13,15 +14,50 @@ import {
   View,
 } from "react-native";
 
+// 1. DEFINA A URL DA SUA API (use seu IP!)
+const API_URL = "http://10.0.0.66:3000"; // ❗️ SUBSTITUA PELO SEU IP
+
 export default function LoginScreen() {
   const router = useRouter();
   const [isPasswordVisible, setPasswordVisible] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
-  const handleLogin = () => {
-    console.log("Navegando para a tela de excursões...");
-    
-    router.replace("/excursoes");
+  // 2. CRIE ESTADOS PARA OS CAMPOS
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+
+  const handleLogin = async () => {
+    if (!email || !senha) {
+      Alert.alert("Erro", "Por favor, preencha o email e a senha.");
+      return;
+    }
+
+    // 3. FAÇA A REQUISIÇÃO GET PARA VALIDAR O LOGIN
+    try {
+      // json-server permite filtrar com query params
+      const response = await fetch(
+        `${API_URL}/usuarios?email=${email}&senha=${senha}`
+      );
+      if (!response.ok) {
+        throw new Error("Erro de rede.");
+      }
+
+      const data = await response.json();
+
+      // 4. VERIFIQUE SE O USUÁRIO FOI ENCONTRADO
+      if (data.length > 0) {
+        // Login com sucesso!
+        console.log("Usuário logado:", data[0]);
+        // Aqui você salvaria o usuário logado (Context API, AsyncStorage, etc)
+        router.replace("/excursoes");
+      } else {
+        // Credenciais erradas
+        Alert.alert("Erro", "Email ou senha incorretos.");
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Erro", "Não foi possível fazer o login. Tente novamente.");
+    }
   };
 
   const navigateToRegister = () => {
@@ -58,6 +94,7 @@ export default function LoginScreen() {
             </TouchableOpacity>
           </View>
 
+          {/* 5. CONECTE OS INPUTS AOS ESTADOS */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Email</Text>
             <View style={styles.inputWrapper}>
@@ -67,6 +104,8 @@ export default function LoginScreen() {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 placeholderTextColor="#999"
+                value={email}
+                onChangeText={setEmail} // ❗️ MUDANÇA
               />
             </View>
           </View>
@@ -79,6 +118,8 @@ export default function LoginScreen() {
                 placeholder="********"
                 secureTextEntry={!isPasswordVisible}
                 placeholderTextColor="#999"
+                value={senha}
+                onChangeText={setSenha} // ❗️ MUDANÇA
               />
               <TouchableOpacity
                 onPress={() => setPasswordVisible(!isPasswordVisible)}
@@ -135,6 +176,7 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
+  // ... (seus estilos existentes)
   container: {
     flex: 1,
     backgroundColor: "#0902B0",

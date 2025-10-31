@@ -1,0 +1,129 @@
+{
+  "usuarios": [
+    {
+      "id": "1",
+      "nomeCompleto": "Theo Natan",
+      "email": "teste123@gmail.com",
+      "dataNascimento": "27/04/2005",
+      "telefone": "(88) 9 9205-3874",
+      "senha": "123456"
+    },
+    {
+      "id": "a889",
+      "nomeCompleto": "Theo Natan ",
+      "email": "teste123@gmail.com",
+      "dataNascimento": "27/04/2005",
+      "telefone": "88992053874",
+      "senha": "1234567"
+    },
+    {
+      "id": "e176",
+      "nomeCompleto": "Theo Natan ",
+      "email": "teste123@gmail.com",
+      "dataNascimento": "27/04/2005",
+      "telefone": "88992053874",
+      "senha": "1234567"
+    },
+    {
+      "id": "ae55",
+      "nomeCompleto": "Theo Natan ",
+      "email": "teste123@gmail.com",
+      "dataNascimento": "27/04/2005",
+      "telefone": "88992053874",
+      "senha": "123456"
+    }
+  ],
+  "excursoes": [
+    {
+      "id": "porto-seguro",
+      "titulo": "Porto Seguro",
+      "hotel": {
+        "nome": "Hotel Fenix Porto Seguro",
+        "endereco": "Rua Das Pitangueiras, 257, Centro, Porto Seguro, Bahia, Brasil",
+        "estrelas": 3
+      },
+      "imagemCapaUrl": "https://imgur.com/UfLTRWj.png",
+      "imagensCarousel": [
+        "https://imgur.com/fjxbldj.png",
+        "https://i.imgur.com/qOpUqI9.png",
+        "https://i.imgur.com/tAdFzGr.png",
+        "https://i.imgur.com/DwbxdZx.png",
+        "https://i.imgur.com/Whe8yRd.png"
+      ],
+      "sobre": "O Hotel Fênix Porto Seguro é uma opção aconchegante para quem busca conforto e praticidade na cidade.",
+      "partida": {
+        "local": "Rodoviária de Juazeiro do Norte",
+        "data": "19/10/2025",
+        "hora": "20:00H"
+      },
+      "retorno": {
+        "local": "Hotel Fenix Porto Seguro",
+        "data": "23/10/2025",
+        "hora": "16:00H"
+      },
+      "precoPorPessoa": 800
+    },
+    {
+      "id": "natal",
+      "titulo": "Natal (Enfeite)",
+      "imagemCapaUrl": "https://i.imgur.com/cwx2Vkh.png"
+    },
+    {
+      "id": "rio-de-janeiro",
+      "titulo": "Rio de Janeiro (Enfeite)",
+      "imagemCapaUrl": "https://i.imgur.com/mKXEbHk.png"
+    }
+  ],
+  "trilhas": [
+    {
+      "id": "diamantina",
+      "titulo": "Chapada Diamantina",
+      "localizacao": "Parque Nacional da Chapada Diamantina, Lençóis, Bahia, Brasil",
+      "estrelas": 4,
+      "imagemCapaUrl": "https://i.imgur.com/5hjikQN.png",
+      "imagensCarousel": [
+        "https://i.imgur.com/Z8oOta7.png",
+        "https://i.imgur.com/CzunU9i.png",
+        "https://i.imgur.com/DplS0Lc.png",
+        "https://i.imgur.com/Ntm1qg2.png",
+        "https://i.imgur.com/YAQSqKw.png"
+      ],
+      "sobre": "A Chapada Diamantina é um dos destinos mais encantadores do Brasil...",
+      "partida": {
+        "local": "Aeroporto de Juazeiro do Norte",
+        "data": "19/09/2025",
+        "hora": "03:00H"
+      },
+      "retorno": {
+        "local": "Aeroporto Coronel Horácio",
+        "data": "23/09/2025",
+        "hora": "22:00H"
+      },
+      "precoPorPessoa": 700
+    },
+    {
+      "id": "dois-irmaos",
+      "titulo": "Dois Irmãos (Enfeite)",
+      "imagemCapaUrl": "https://i.imgur.com/V46gXxL.png"
+    },
+    {
+      "id": "naufragados",
+      "titulo": "Naufragados (Enfeite)",
+      "imagemCapaUrl": "https://i.imgur.com/q75rb3O.png"
+    }
+  ],
+  "minhasViagens": [
+    {
+      "id": "e5cc",
+      "viagemId": "porto-seguro",
+      "titulo": "Porto Seguro",
+      "imagemUrl": "https://i.imgur.com/S9kcMwa.png"
+    },
+    {
+      "id": "3a8e",
+      "viagemId": "diamantina",
+      "titulo": "Chapada Diamantina",
+      "imagemUrl": "https://i.imgur.com/86TYVA3.png"
+    }
+  ]
+}

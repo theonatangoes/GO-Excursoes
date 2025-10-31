@@ -2,6 +2,7 @@ import { Feather, Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -13,13 +14,54 @@ import {
   View,
 } from "react-native";
 
+// 1. DEFINA A URL DA SUA API (use seu IP!)
+const API_URL = "http://10.0.0.66:3000"; // ❗️ SUBSTITUA PELO SEU IP
+
 export default function RegisterScreen() {
   const router = useRouter();
   const [isPasswordVisible, setPasswordVisible] = useState(false);
 
-  const handleRegister = () => {
-    console.log("Navegando para Excursões após registro...");
-    router.replace("/excursoes");
+  // 2. CRIE ESTADOS PARA CADA CAMPO DO FORMULÁRIO
+  const [nomeCompleto, setNomeCompleto] = useState("");
+  const [email, setEmail] = useState("");
+  const [dataNascimento, setDataNascimento] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [senha, setSenha] = useState("");
+
+  const handleRegister = async () => {
+    // 3. CRIE O OBJETO DE NOVO USUÁRIO
+    const novoUsuario = {
+      nomeCompleto,
+      email,
+      dataNascimento,
+      telefone,
+      senha,
+    };
+
+    // 4. FAÇA A REQUISIÇÃO POST
+    try {
+      const response = await fetch(`${API_URL}/usuarios`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(novoUsuario),
+      });
+
+      if (!response.ok) {
+        throw new Error("Não foi possível criar a conta.");
+      }
+
+      const data = await response.json();
+      console.log("Usuário registrado:", data);
+
+      Alert.alert("Sucesso!", "Sua conta foi criada.", [
+        { text: "OK", onPress: () => router.replace("/excursoes") },
+      ]);
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Erro", "Não foi possível criar a conta. Tente novamente.");
+    }
   };
 
   const navigateToLogin = () => {
@@ -42,7 +84,7 @@ export default function RegisterScreen() {
 
         <View style={styles.formContainer}>
           <TouchableOpacity
-            onPress={() => router.back()} 
+            onPress={() => router.back()}
             style={styles.backButton}
           >
             <Ionicons name="arrow-back" size={24} color="#333" />
@@ -56,6 +98,7 @@ export default function RegisterScreen() {
             </TouchableOpacity>
           </View>
 
+          {/* 5. CONECTE OS INPUTS AOS ESTADOS */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Nome Completo</Text>
             <View style={styles.inputWrapper}>
@@ -63,6 +106,8 @@ export default function RegisterScreen() {
                 style={styles.textInput}
                 placeholder="Digite seu nome completo"
                 placeholderTextColor="#999"
+                value={nomeCompleto}
+                onChangeText={setNomeCompleto} // ❗️ MUDANÇA
               />
             </View>
           </View>
@@ -76,6 +121,8 @@ export default function RegisterScreen() {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 placeholderTextColor="#999"
+                value={email}
+                onChangeText={setEmail} // ❗️ MUDANÇA
               />
             </View>
           </View>
@@ -87,6 +134,8 @@ export default function RegisterScreen() {
                 style={styles.textInput}
                 placeholder="DD/MM/AAAA"
                 placeholderTextColor="#999"
+                value={dataNascimento}
+                onChangeText={setDataNascimento} // ❗️ MUDANÇA
               />
               <Feather
                 name="calendar"
@@ -109,6 +158,8 @@ export default function RegisterScreen() {
                 placeholder="(00) 9 0000-0000"
                 keyboardType="phone-pad"
                 placeholderTextColor="#999"
+                value={telefone}
+                onChangeText={setTelefone} // ❗️ MUDANÇA
               />
             </View>
           </View>
@@ -121,6 +172,8 @@ export default function RegisterScreen() {
                 placeholder="********"
                 secureTextEntry={!isPasswordVisible}
                 placeholderTextColor="#999"
+                value={senha}
+                onChangeText={setSenha} // ❗️ MUDANÇA
               />
               <TouchableOpacity
                 onPress={() => setPasswordVisible(!isPasswordVisible)}
@@ -137,7 +190,7 @@ export default function RegisterScreen() {
 
           <TouchableOpacity
             style={styles.submitButton}
-            onPress={handleRegister} 
+            onPress={handleRegister}
           >
             <Text style={styles.submitButtonText}>Registrar</Text>
           </TouchableOpacity>
@@ -148,6 +201,7 @@ export default function RegisterScreen() {
 }
 
 const styles = StyleSheet.create({
+  // ... (seus estilos existentes)
   container: {
     flex: 1,
     backgroundColor: "#FFDE00",

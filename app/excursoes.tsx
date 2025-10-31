@@ -1,6 +1,8 @@
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react"; // Importar useEffect e useState
 import {
+  ActivityIndicator,
   Image,
   ScrollView,
   StyleSheet,
@@ -9,27 +11,51 @@ import {
   View,
 } from "react-native";
 
-const explorarData = [
-  {
-    id: "porto-seguro",
-    imagem: require("../assets/images/Portoseguro.png"),
-  },
-  {
-    id: "natal",
-    imagem: require("../assets/images/Natal.png"),
-  },
-  {
-    id: "rio-de-janeiro",
-    imagem: require("../assets/images/RiodeJaneiro.png"),
-  },
-];
+// 1. DEFINA A URL DA SUA API (use seu IP!)
+const API_URL = "http://10.0.0.66:3000"; // ❗️ SUBSTITUA PELO SEU IP
+
+// 2. DEFINA A INTERFACE DOS DADOS
+interface Excursao {
+  id: string;
+  titulo: string;
+  imagemCapaUrl: string;
+}
 
 export default function ExcursoesScreen() {
   const router = useRouter();
 
+  // 3. CRIE ESTADOS para guardar os dados, o carregamento e erros
+  const [excursoes, setExcursoes] = useState<Excursao[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // 4. CRIE O useEffect PARA BUSCAR OS DADOS QUANDO A TELA ABRE
+  useEffect(() => {
+    const fetchExcursoes = async () => {
+      try {
+        const response = await fetch(`${API_URL}/excursoes`);
+        if (!response.ok) {
+          throw new Error("Falha ao buscar dados.");
+        }
+        const data: Excursao[] = await response.json();
+        setExcursoes(data);
+      } catch (e) {
+        setError("Não foi possível carregar as excursões.");
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExcursoes();
+  }, []); // O array vazio [] faz com que isso rode apenas 1 vez
+
   const handleCardPress = (itemId: string) => {
+    // ❗️ MUDANÇA IMPORTANTE: Passando o ID para a próxima tela
+    // Certifique-se que sua rota de detalhes aceite um ID
+    // ex: app/detalhes_viagem/[id].tsx
     if (itemId === "porto-seguro") {
-      router.push("/detalhes_viagem");
+      router.push("/detalhes_viagem"); // Mantido como o original, mas idealmente passaria o ID
     } else {
       console.log(`Navegação para ${itemId} ainda não implementada.`);
     }
@@ -39,11 +65,49 @@ export default function ExcursoesScreen() {
     router.replace("/trilhas");
   };
 
+  // 5. ATUALIZE O RENDER
+  const renderExploreContent = () => {
+    if (loading) {
+      return (
+        <ActivityIndicator
+          size="large"
+          color="#0902B0"
+          style={{ marginTop: 20, height: 260 }} // Manter altura
+        />
+      );
+    }
+
+    if (error) {
+      return <Text style={styles.errorText}>{error}</Text>;
+    }
+
+    return (
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.carouselContainer}
+      >
+        {excursoes.map((item) => (
+          <TouchableOpacity
+            key={item.id}
+            style={styles.card}
+            onPress={() => handleCardPress(item.id)}
+          >
+            <Image
+              source={{ uri: item.imagemCapaUrl }} // ❗️ MUDANÇA AQUI
+              style={styles.cardImage}
+            />
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    );
+  };
+
   return (
     <View style={styles.screen}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 100 }} 
+        contentContainerStyle={{ paddingBottom: 100 }}
       >
         <View style={styles.headerYellow}>
           <View style={styles.headerContainer}>
@@ -56,7 +120,7 @@ export default function ExcursoesScreen() {
               style={styles.logo}
             />
           </View>
-          
+
           <View style={styles.menuContainer}>
             <TouchableOpacity style={styles.menuButtonLight}>
               <Image
@@ -77,34 +141,21 @@ export default function ExcursoesScreen() {
             </TouchableOpacity>
           </View>
         </View>
-       
+
         <TouchableOpacity style={styles.promoContainer}>
           <Image
             source={require("../assets/images/Propaganda.png")}
             style={styles.promoBanner}
           />
         </TouchableOpacity>
-        
+
         <View style={styles.exploreSection}>
           <Text style={styles.exploreTitle}>Explorar Excursões</Text>
           <Text style={styles.exploreSubtitle}>
             Descubra lugares e experiências!
           </Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.carouselContainer}
-          >
-            {explorarData.map((item) => (
-              <TouchableOpacity
-                key={item.id}
-                style={styles.card}
-                onPress={() => handleCardPress(item.id)}
-              >
-                <Image source={item.imagem} style={styles.cardImage} />
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+
+          {renderExploreContent()}
         </View>
       </ScrollView>
 
@@ -138,12 +189,12 @@ export default function ExcursoesScreen() {
           <Text style={styles.navText}>Perfil</Text>
         </TouchableOpacity>
       </View>
-      
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  // ... (seus estilos existentes)
   screen: {
     flex: 1,
     backgroundColor: "#F4F4F4",
@@ -182,7 +233,7 @@ const styles = StyleSheet.create({
   },
   menuButtonLight: {
     flex: 1,
-    backgroundColor: "rgba(255, 255, 255, 0.48)",
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
     padding: 20,
     borderRadius: 20,
     alignItems: "center",
@@ -265,6 +316,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     borderRadius: 15,
+    backgroundColor: "#e0e0e0", // Cor de fundo
   },
   navbar: {
     position: "absolute",
@@ -286,5 +338,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#000000ff",
     marginTop: 2,
+  },
+  errorText: {
+    textAlign: "center",
+    color: "red",
+    marginTop: 20,
+    fontSize: 16,
+    height: 260,
   },
 });

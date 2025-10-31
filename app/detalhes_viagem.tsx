@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Dimensions,
   FlatList,
   Image,
@@ -16,21 +17,71 @@ import {
   ViewToken,
 } from "react-native";
 
+// 1. DEFINA A URL DA SUA API (use seu IP!)
+const API_URL = "http://10.0.0.66:3000"; // ❗️ SUBSTITUA PELO SEU IP
+
 const { width } = Dimensions.get("window");
 const SCREEN_PADDING = 20;
 const ITEM_WIDTH = width - SCREEN_PADDING * 2;
 
-const carouselImages = [
-  require("../assets/images/porto1.png"),
-  require("../assets/images/porto2.png"),
-  require("../assets/images/porto3.png"),
-  require("../assets/images/porto4.png"),
-  require("../assets/images/porto5.png"),
-];
+// 2. DEFINA A INTERFACE COMPLETA DA EXCURSÃO
+interface ExcursaoDetalhes {
+  id: string;
+  titulo: string;
+  hotel: {
+    nome: string;
+    endereco: string;
+    estrelas: number;
+  };
+  imagensCarousel: string[];
+  sobre: string;
+  partida: {
+    local: string;
+    data: string;
+    hora: string;
+  };
+  retorno: {
+    local: string;
+    data: string;
+    hora: string;
+  };
+  precoPorPessoa: number;
+}
 
 export default function DetalhesViagem() {
   const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
+
+  // 3. CRIE OS ESTADOS
+  const [viagem, setViagem] = useState<ExcursaoDetalhes | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // 4. CRIE O useEffect PARA BUSCAR OS DADOS
+  useEffect(() => {
+    const fetchViagem = async () => {
+      try {
+        // ❗️ ATENÇÃO: Hardcoded para 'porto-seguro'
+        // O ideal aqui é pegar o ID vindo da navegação
+        // const { id } = useLocalSearchParams();
+        // const response = await fetch(`${API_URL}/excursoes/${id}`);
+
+        const response = await fetch(`${API_URL}/excursoes/porto-seguro`);
+        if (!response.ok) {
+          throw new Error("Falha ao buscar dados da viagem.");
+        }
+        const data: ExcursaoDetalhes = await response.json();
+        setViagem(data);
+      } catch (e) {
+        setError("Não foi possível carregar os detalhes da viagem.");
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchViagem();
+  }, []);
 
   const onViewableItemsChanged = useRef(
     ({ viewableItems }: { viewableItems: Array<ViewToken> }) => {
@@ -48,10 +99,32 @@ export default function DetalhesViagem() {
     router.push("/pagamento_porto");
   };
 
+  // 5. LÓGICA DE RENDERIZAÇÃO
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <ActivityIndicator size="large" color="#0902B0" style={{ flex: 1 }} />
+      </SafeAreaView>
+    );
+  }
+
+  if (error || !viagem) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <Text style={styles.errorText}>{error}</Text>
+      </SafeAreaView>
+    );
+  }
+
+  // Define a imagem de estrelas com base no JSON
+  const starImage =
+    viagem.hotel.estrelas === 3
+      ? require("../assets/images/3estrelas.png")
+      : require("../assets/images/4estrelas.png"); // Adicione outras lógicas se precisar
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
-
         <View style={styles.headerContainer}>
           <TouchableOpacity
             onPress={() => router.back()}
@@ -60,7 +133,7 @@ export default function DetalhesViagem() {
             <Ionicons name="arrow-back" size={28} color="#333" />
           </TouchableOpacity>
           <View style={styles.headerCenter}>
-            <Text style={styles.mainTitle}>Porto Seguro</Text>
+            <Text style={styles.mainTitle}>{viagem.titulo}</Text>
             <Text style={styles.subtitle}>19 Out. - 23 Out., 2 adultos</Text>
           </View>
           <View style={styles.headerSide} />
@@ -72,22 +145,17 @@ export default function DetalhesViagem() {
               source={require("../assets/images/Verificado_1.png")}
               style={styles.verifiedIcon}
             />
-            <Text style={styles.hotelName}>Hotel Fenix Porto Seguro</Text>
+            <Text style={styles.hotelName}>{viagem.hotel.nome}</Text>
           </View>
-          <Text style={styles.address}>
-            Rua Das Pitangueiras, 257, Centro, Porto Seguro, Bahia, Brasil
-          </Text>
-          <Image
-            source={require("../assets/images/3estrelas.png")}
-            style={styles.stars}
-          />
+          <Text style={styles.address}>{viagem.hotel.endereco}</Text>
+          <Image source={starImage} style={styles.stars} />
         </View>
 
         <View style={styles.carouselContainer}>
           <FlatList
-            data={carouselImages}
+            data={viagem.imagensCarousel} // ❗️ MUDANÇA AQUI
             renderItem={({ item }) => (
-              <Image source={item} style={styles.carouselImage} />
+              <Image source={{ uri: item }} style={styles.carouselImage} /> // ❗️ MUDANÇA AQUI
             )}
             keyExtractor={(_, index) => index.toString()}
             horizontal
@@ -97,15 +165,20 @@ export default function DetalhesViagem() {
             viewabilityConfig={viewabilityConfig}
           />
           <View style={styles.paginationContainer}>
-            {carouselImages.map((_, index) => (
-              <View
-                key={index}
-                style={[
-                  styles.dot,
-                  index === activeIndex ? styles.activeDot : {},
-                ]}
-              />
-            ))}
+            {viagem.imagensCarousel.map(
+              (
+                _,
+                index // ❗️ MUDANÇA AQUI
+              ) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.dot,
+                    index === activeIndex ? styles.activeDot : {},
+                  ]}
+                />
+              )
+            )}
           </View>
         </View>
 
@@ -114,10 +187,7 @@ export default function DetalhesViagem() {
             Sobre a hospedagem
           </Text>
           <Text style={[styles.description, styles.centeredText]}>
-            O Hotel Fênix Porto Seguro é uma opção aconchegante para quem busca
-            conforto e praticidade na cidade. Localizado próximo às principais
-            praias e pontos turísticos, oferece ambiente agradável, bom
-            atendimento.
+            {viagem.sobre}
           </Text>
 
           <View style={styles.embeddedFullInfoCard}>
@@ -125,39 +195,37 @@ export default function DetalhesViagem() {
               <View style={styles.iconContainer}>
                 <Ionicons name="bus" size={30} color="#000" />
               </View>
-              <Text style={styles.bannerTitle}>PORTO SEGURO</Text>
+              <Text style={styles.bannerTitle}>
+                {viagem.titulo.toUpperCase()}
+              </Text>
             </View>
             <View style={styles.bannerBottomSection}>
               <View style={styles.bannerRow}>
                 <View style={styles.bannerColumn}>
                   <Text style={styles.bannerLabel}>LOCAL DE PARTIDA:</Text>
-                  <Text style={styles.bannerValue}>
-                    Rodoviária de Juazeiro do Norte
-                  </Text>
+                  <Text style={styles.bannerValue}>{viagem.partida.local}</Text>
                 </View>
                 <View style={styles.bannerColumn}>
                   <Text style={styles.bannerLabel}>DATA:</Text>
-                  <Text style={styles.bannerValue}>19/10/2025</Text>
+                  <Text style={styles.bannerValue}>{viagem.partida.data}</Text>
                 </View>
                 <View style={styles.bannerColumn}>
                   <Text style={styles.bannerLabel}>HORA:</Text>
-                  <Text style={styles.bannerValue}>20:00H</Text>
+                  <Text style={styles.bannerValue}>{viagem.partida.hora}</Text>
                 </View>
               </View>
               <View style={styles.bannerRow}>
                 <View style={styles.bannerColumn}>
                   <Text style={styles.bannerLabel}>LOCAL DE RETORNO:</Text>
-                  <Text style={styles.bannerValue}>
-                    Hotel Fenix Porto Seguro
-                  </Text>
+                  <Text style={styles.bannerValue}>{viagem.retorno.local}</Text>
                 </View>
                 <View style={styles.bannerColumn}>
                   <Text style={styles.bannerLabel}>DATA:</Text>
-                  <Text style={styles.bannerValue}>23/10/2025</Text>
+                  <Text style={styles.bannerValue}>{viagem.retorno.data}</Text>
                 </View>
                 <View style={styles.bannerColumn}>
                   <Text style={styles.bannerLabel}>HORA:</Text>
-                  <Text style={styles.bannerValue}>16:00H</Text>
+                  <Text style={styles.bannerValue}>{viagem.retorno.hora}</Text>
                 </View>
               </View>
             </View>
@@ -176,6 +244,7 @@ export default function DetalhesViagem() {
 }
 
 const styles = StyleSheet.create({
+  // ... (seus estilos existentes)
   safeArea: {
     flex: 1,
     backgroundColor: "#fff",
@@ -285,6 +354,7 @@ const styles = StyleSheet.create({
     width: ITEM_WIDTH,
     height: 250,
     borderRadius: 15,
+    backgroundColor: "#e0e0e0",
   },
   paginationContainer: {
     flexDirection: "row",
@@ -333,5 +403,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "#000000ff",
+  },
+  errorText: {
+    textAlign: "center",
+    color: "red",
+    marginTop: 50,
+    fontSize: 16,
   },
 });

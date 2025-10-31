@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
   Image,
   SafeAreaView,
   ScrollView,
@@ -11,6 +12,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
+// Defina seu IP
+const API_URL = "http://10.0.0.66:3000";
 
 const paymentMethods = [
   {
@@ -37,16 +41,55 @@ export default function PagamentoScreen() {
   const router = useRouter();
   const [selectedMethod, setSelectedMethod] = useState("mastercard");
 
-  const handleConfirmPayment = () => {
+  const handleConfirmPayment = async () => {
     console.log(`Pagamento confirmado com: ${selectedMethod}`);
 
-    router.replace("/pagamento_aprovado");
+    // ❗️❗️ OLHE AQUI A SUA ALTERAÇÃO ❗️❗️
+    const novaViagem = {
+      viagemId: "porto-seguro",
+      titulo: "Porto Seguro",
+      // Este é o link direto da imagem que você enviou
+      imagemUrl: "https://i.imgur.com/S9kcMwa.png",
+    };
+    // ❗️❗️ FIM DA ALTERAÇÃO ❗️❗️
+
+    try {
+      // 1. Verifica se a viagem já existe
+      const checkResponse = await fetch(
+        `${API_URL}/minhasViagens?viagemId=${novaViagem.viagemId}`
+      );
+      const existingTrips = await checkResponse.json();
+
+      // 2. Se não existe (length === 0), adiciona
+      if (existingTrips.length === 0) {
+        const addResponse = await fetch(`${API_URL}/minhasViagens`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(novaViagem),
+        });
+
+        if (!addResponse.ok) {
+          throw new Error("Não foi possível salvar a viagem.");
+        }
+        console.log("Viagem adicionada com sucesso!");
+      } else {
+        console.log("Viagem já existe em Minhas Viagens.");
+      }
+
+      // 3. Navega para a tela de aprovação
+      router.replace("/pagamento_aprovado");
+    } catch (error) {
+      console.error(error);
+      Alert.alert(
+        "Erro",
+        "Houve um problema ao confirmar sua viagem. Tente novamente."
+      );
+    }
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
- 
         <View style={styles.header}>
           <Text style={styles.headerTitleMain}>Método</Text>
           <View style={styles.headerSubtitleRow}>
