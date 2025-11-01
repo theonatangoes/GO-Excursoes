@@ -16,42 +16,60 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+// ❗️ MUDANÇA: Importar o AsyncStorage
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// 1. DEFINA A URL DA SUA API (use seu IP!)
-const API_URL = "http://10.0.0.66:3000"; // ❗️ SUBSTITUA PELO SEU IP
+// ❗️ Use seu IP
+const API_URL = "http://10.0.0.66:3000";
 
-// Assumindo que o usuário logado é o ID 1 (Theo Natan)
-const USUARIO_ID = 1;
+// ❗️ MUDANÇA: Removemos o USUARIO_ID = 1 daqui
 
 export default function PerfilUsuarioScreen() {
   const router = useRouter();
   const [isPasswordVisible, setPasswordVisible] = useState(false);
 
-  // 2. CRIE ESTADOS PARA OS DADOS
+  // ❗️ ESTADOS PARA OS DADOS DO FORMULÁRIO
   const [nomeCompleto, setNomeCompleto] = useState("");
   const [email, setEmail] = useState("");
   const [dataNascimento, setDataNascimento] = useState("");
   const [telefone, setTelefone] = useState("");
-  const [senha, setSenha] = useState(""); // Idealmente, o campo senha seria tratado de forma diferente
-
+  const [senha, setSenha] = useState("");
+  const [fotoPerfilUrl, setFotoPerfilUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // 3. CRIE O useEffect PARA BUSCAR OS DADOS DO USUÁRIO
+  // ❗️ MUDANÇA: Estado para guardar o ID do usuário
+  const [usuarioId, setUsuarioId] = useState<string | null>(null);
+
+  // ❗️ MUDANÇA: Busca os dados do usuário do AsyncStorage
   useEffect(() => {
     const fetchUsuario = async () => {
       try {
-        const response = await fetch(`${API_URL}/usuarios/${USUARIO_ID}`);
+        setLoading(true);
+
+        // 1. Busca o ID salvo no AsyncStorage
+        const id = await AsyncStorage.getItem("usuarioId");
+        if (!id) {
+          Alert.alert("Erro", "Usuário não encontrado. Faça login novamente.", [
+            { text: "OK", onPress: () => router.replace("/login") },
+          ]);
+          return;
+        }
+        setUsuarioId(id); // Salva o ID no estado
+
+        // 2. Usa o ID salvo para buscar os dados
+        const response = await fetch(`${API_URL}/usuarios/${id}`);
         if (!response.ok) {
           throw new Error("Usuário não encontrado.");
         }
         const data = await response.json();
 
-        // 4. PREENCHA OS ESTADOS COM OS DADOS DA API
+        // 3. Preenche os campos
         setNomeCompleto(data.nomeCompleto);
         setEmail(data.email);
         setDataNascimento(data.dataNascimento);
         setTelefone(data.telefone);
-        setSenha(data.senha); // Cuidado ao popular senhas
+        setSenha(data.senha);
+        setFotoPerfilUrl(data.fotoPerfilUrl || null); // Puxa a foto (URL ou Base64)
       } catch (error) {
         console.error(error);
         Alert.alert("Erro", "Não foi possível carregar os dados do perfil.");
@@ -61,23 +79,30 @@ export default function PerfilUsuarioScreen() {
     };
 
     fetchUsuario();
-  }, []); // [] = Roda apenas uma vez
+  }, []);
 
   const handleUpdateProfile = async () => {
-    // 5. CRIE O OBJETO COM OS DADOS ATUALIZADOS
+    // ❗️ MUDANÇA: Garante que temos o ID para o PATCH
+    if (!usuarioId) {
+      Alert.alert("Erro", "ID do usuário não encontrado.");
+      return;
+    }
+
+    // ❗️ MUDANÇA: Se você permitir trocar a foto aqui, terá que refazer a lógica do Base64
+    // Por enquanto, ele apenas reenviará a foto que já estava salva (fotoPerfilUrl)
     const dadosAtualizados = {
       nomeCompleto,
       email,
       dataNascimento,
       telefone,
-      senha, // ❗️ Cuidado: Você pode não querer enviar a senha assim
-      // Se o campo senha estiver vazio, não o inclua no PATCH
+      senha,
+      fotoPerfilUrl,
     };
 
     try {
-      // 6. FAÇA A REQUISIÇÃO PATCH (ou PUT)
-      const response = await fetch(`${API_URL}/usuarios/${USUARIO_ID}`, {
-        method: "PATCH", // PATCH atualiza só o que foi enviado
+      const response = await fetch(`${API_URL}/usuarios/${usuarioId}`, {
+        // ❗️ MUDANÇA: Usa o ID do estado
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
@@ -87,7 +112,6 @@ export default function PerfilUsuarioScreen() {
       if (!response.ok) {
         throw new Error("Não foi possível atualizar o perfil.");
       }
-
       Alert.alert("Sucesso!", "Perfil atualizado.");
     } catch (error) {
       console.error(error);
@@ -95,10 +119,11 @@ export default function PerfilUsuarioScreen() {
     }
   };
 
+  // Se estiver carregando, mostra um spinner
   if (loading) {
     return (
-      <SafeAreaView style={styles.safeArea}>
-        <ActivityIndicator size="large" color="#0902B0" style={{ flex: 1 }} />
+      <SafeAreaView style={[styles.safeArea, { justifyContent: "center" }]}>
+        <ActivityIndicator size="large" color="#0902B0" />
       </SafeAreaView>
     );
   }
@@ -124,20 +149,28 @@ export default function PerfilUsuarioScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.formCard}>
+            {/* ❗️ NENHUMA MUDANÇA AQUI ❗️
+              O <Image> com {uri: ...} já sabe como ler
+              tanto uma URL normal (http://) quanto um Base64 (data:image/...).
+            */}
             <Image
-              source={require("../assets/images/avatar.png")}
+              source={
+                fotoPerfilUrl
+                  ? { uri: fotoPerfilUrl }
+                  : require("../assets/images/avatar.png")
+              }
               style={styles.avatar}
             />
-            {/* 7. CONECTE OS INPUTS AOS ESTADOS */}
+
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Nome Completo</Text>
               <View style={styles.inputWrapper}>
                 <TextInput
                   style={styles.textInput}
                   placeholder="Digite seu nome completo"
+                  value={nomeCompleto}
+                  onChangeText={setNomeCompleto}
                   placeholderTextColor="#999"
-                  value={nomeCompleto} // ❗️ MUDANÇA
-                  onChangeText={setNomeCompleto} // ❗️ MUDANÇA
                 />
               </View>
             </View>
@@ -147,11 +180,11 @@ export default function PerfilUsuarioScreen() {
                 <TextInput
                   style={styles.textInput}
                   placeholder="seuemail@exemplo.com"
+                  value={email}
+                  onChangeText={setEmail}
                   keyboardType="email-address"
                   autoCapitalize="none"
                   placeholderTextColor="#999"
-                  value={email} // ❗️ MUDANÇA
-                  onChangeText={setEmail} // ❗️ MUDANÇA
                 />
               </View>
             </View>
@@ -161,9 +194,9 @@ export default function PerfilUsuarioScreen() {
                 <TextInput
                   style={styles.textInput}
                   placeholder="DD/MM/AAAA"
+                  value={dataNascimento}
+                  onChangeText={setDataNascimento}
                   placeholderTextColor="#999"
-                  value={dataNascimento} // ❗️ MUDANÇA
-                  onChangeText={setDataNascimento} // ❗️ MUDANÇA
                 />
                 <Feather
                   name="calendar"
@@ -183,10 +216,10 @@ export default function PerfilUsuarioScreen() {
                 <TextInput
                   style={[styles.textInput, styles.phoneInput]}
                   placeholder="(00) 9 0000-0000"
+                  value={telefone}
+                  onChangeText={setTelefone}
                   keyboardType="phone-pad"
                   placeholderTextColor="#999"
-                  value={telefone} // ❗️ MUDANÇA
-                  onChangeText={setTelefone} // ❗️ MUDANÇA
                 />
               </View>
             </View>
@@ -195,11 +228,11 @@ export default function PerfilUsuarioScreen() {
               <View style={styles.inputWrapper}>
                 <TextInput
                   style={styles.textInput}
-                  placeholder="Digite uma nova senha para alterar"
+                  placeholder="********"
+                  value={senha}
+                  onChangeText={setSenha}
                   secureTextEntry={!isPasswordVisible}
                   placeholderTextColor="#999"
-                  value={senha} // ❗️ MUDANÇA
-                  onChangeText={setSenha} // ❗️ MUDANÇA
                 />
                 <TouchableOpacity
                   onPress={() => setPasswordVisible(!isPasswordVisible)}
@@ -227,8 +260,8 @@ export default function PerfilUsuarioScreen() {
   );
 }
 
+// ... (Estilos não mudam)
 const styles = StyleSheet.create({
-  // ... (seus estilos existentes)
   safeArea: {
     flex: 1,
     backgroundColor: "#F4F4F4",
@@ -284,6 +317,7 @@ const styles = StyleSheet.create({
     top: -60,
     borderWidth: 4,
     borderColor: "#F4F4F4",
+    backgroundColor: "#E0E0E0", // Cor de fundo para o avatar
   },
   inputGroup: {
     marginBottom: 20,

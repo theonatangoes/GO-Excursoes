@@ -13,13 +13,11 @@ import {
   View,
 } from "react-native";
 
-// ❗️ Defina seu IP
 const API_URL = "http://10.0.0.66:3000";
 
-// ❗️ Nova interface
 interface MinhaViagem {
-  id: number; // ID único que o json-server cria
-  viagemId: string; // "porto-seguro" ou "diamantina"
+  id: number;
+  viagemId: string; 
   titulo: string;
   imagemUrl: string;
 }
@@ -30,13 +28,10 @@ export default function MinhasViagensScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // ❗️ MUDANÇA: Usamos useFocusEffect em vez de useEffect
-  // Isso faz com que a lista seja RECARREGADA toda vez que o usuário
-  // VOLTAR para esta tela, mostrando a viagem que ele acabou de comprar!
   useFocusEffect(
     React.useCallback(() => {
       const fetchMinhasViagens = async () => {
-        setLoading(true); // Mostra o loading toda vez que recarregar
+        setLoading(true); 
         try {
           const response = await fetch(`${API_URL}/minhasViagens`);
           if (!response.ok) {
@@ -75,7 +70,6 @@ export default function MinhasViagensScreen() {
       return <Text style={styles.errorText}>{error}</Text>;
     }
 
-    // ❗️ Se não tiver viagens, mostra uma mensagem
     if (trips.length === 0) {
       return (
         <Text style={styles.emptyText}>
@@ -88,9 +82,9 @@ export default function MinhasViagensScreen() {
       <>
         {trips.map((trip) => (
           <TouchableOpacity
-            key={trip.id} // Use o ID único do item
+            key={trip.id} 
             activeOpacity={0.9}
-            onPress={() => handleTripPress(trip.viagemId)} // ❗️ NAVEGA COM O VIAGEMID
+            onPress={() => handleTripPress(trip.viagemId)} 
           >
             <Image source={{ uri: trip.imagemUrl }} style={styles.cardImage} />
           </TouchableOpacity>
@@ -120,7 +114,6 @@ export default function MinhasViagensScreen() {
 }
 
 const styles = StyleSheet.create({
-  // ... (seus estilos existentes)
   safeArea: {
     flex: 1,
     backgroundColor: "#F4F4F4",

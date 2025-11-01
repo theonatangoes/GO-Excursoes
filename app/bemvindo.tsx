@@ -36,7 +36,7 @@ export default function WelcomeScreen() {
         <View style={styles.buttonRow}>
           <TouchableOpacity
             style={styles.registerButton}
-            onPress={handleRegister} 
+            onPress={handleRegister}
             activeOpacity={0.85}
           >
             <Text style={styles.registerText}>Registrar</Text>
@@ -71,7 +71,6 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
 
-  // Seção azul
   bottomSection: {
     flex: 1,
     backgroundColor: "#0902B0",

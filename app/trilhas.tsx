@@ -156,6 +156,10 @@ export default function TrilhasScreen() {
         </View>
       </ScrollView>
 
+      {/* // ===========================================
+      // ❗️❗️❗️ INÍCIO DA ALTERAÇÃO QUE VOCÊ PEDIU ❗️❗️❗️
+      // ===========================================
+      */}
       <View style={styles.navbar}>
         <TouchableOpacity
           style={styles.navItem}
@@ -173,10 +177,16 @@ export default function TrilhasScreen() {
           <Text style={styles.navText}>Minhas viagens</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navItem}>
-          <Feather name="bell" size={24} color="#333" />
-          <Text style={styles.navText}>Notificações</Text>
+        {/* ESTE É O BLOCO ALTERADO */}
+        <TouchableOpacity
+          style={styles.navItem}
+          onPress={() => router.push("/feedbacks")}
+        >
+          <Feather name="message-square" size={24} color="#333" />
+          <Text style={styles.navText}>Feedbacks</Text>
         </TouchableOpacity>
+        {/* FIM DO BLOCO ALTERADO */}
+
         <TouchableOpacity
           style={styles.navItem}
           onPress={() => router.push("/perfil")}
@@ -185,6 +195,10 @@ export default function TrilhasScreen() {
           <Text style={styles.navText}>Perfil</Text>
         </TouchableOpacity>
       </View>
+      {/* // ===========================================
+      // ❗️❗️❗️ FIM DA ALTERAÇÃO ❗️❗️❗️
+      // ===========================================
+      */}
     </View>
   );
 }
@@ -229,7 +243,7 @@ const styles = StyleSheet.create({
   },
   menuButtonLight: {
     flex: 1,
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    backgroundColor: "rgba(255, 255, 255, 0.45)",
     padding: 20,
     borderRadius: 20,
     alignItems: "center",

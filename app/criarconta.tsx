@@ -1,4 +1,5 @@
 import { Feather, Ionicons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -13,6 +14,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+// ❗️ MUDANÇA: Importar o AsyncStorage
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // 1. DEFINA A URL DA SUA API (use seu IP!)
 const API_URL = "http://10.0.0.66:3000"; // ❗️ SUBSTITUA PELO SEU IP
@@ -27,18 +30,89 @@ export default function RegisterScreen() {
   const [dataNascimento, setDataNascimento] = useState("");
   const [telefone, setTelefone] = useState("");
   const [senha, setSenha] = useState("");
+  const [imageUri, setImageUri] = useState<string | null>(null);
+  // ❗️ MUDANÇA: Novo estado para o Base64
+  const [imageBase64, setImageBase64] = useState<string | null>(null);
+
+  // 3. FUNÇÕES DE CÂMERA E GALERIA
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert("Precisamos de permissão para acessar sua galeria.");
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1], // Quadrado para foto de perfil
+      quality: 1,
+      base64: true, // ❗️ MUDANÇA: Solicitar Base64
+    });
+
+    if (!result.canceled) {
+      setImageUri(result.assets[0].uri);
+      // ❗️ CORREÇÃO AQUI: Converte 'undefined' para 'null'
+      setImageBase64(result.assets[0].base64 ?? null);
+    }
+  };
+
+  const takePhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== "granted") {
+      Alert.alert("Precisamos de permissão para usar sua câmera.");
+      return;
+    }
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [1, 1], // Quadrado para foto de perfil
+      quality: 1,
+      base64: true, // ❗️ MUDANÇA: Solicitar Base64
+    });
+
+    if (!result.canceled) {
+      setImageUri(result.assets[0].uri);
+      // ❗️ CORREÇÃO AQUI: Converte 'undefined' para 'null'
+      setImageBase64(result.assets[0].base64 ?? null);
+    }
+  };
+
+  // 4. FUNÇÃO QUE DEIXA O USUÁRIO ESCOLHER
+  const selectProfilePicture = () => {
+    Alert.alert(
+      "Foto de Perfil",
+      "Escolha como você quer adicionar sua foto:",
+      [
+        { text: "Cancelar", style: "cancel" },
+        { text: "Galeria", onPress: pickImage },
+        { text: "Tirar Foto", onPress: takePhoto },
+      ]
+    );
+  };
 
   const handleRegister = async () => {
-    // 3. CRIE O OBJETO DE NOVO USUÁRIO
+    // 5. ATUALIZA A VALIDAÇÃO E O OBJETO
+    // ❗️ MUDANÇA: Validar também o imageBase64
+    if (!nomeCompleto || !email || !senha || !imageUri || !imageBase64) {
+      Alert.alert(
+        "Erro",
+        "Por favor, preencha todos os campos e adicione uma foto de perfil."
+      );
+      return;
+    }
+
+    // ❗️ MUDANÇA: Formatar a string de dados da imagem Base64
+    const fotoUrlBase64 = `data:image/jpeg;base64,${imageBase64}`;
+
     const novoUsuario = {
       nomeCompleto,
       email,
       dataNascimento,
       telefone,
       senha,
+      fotoPerfilUrl: fotoUrlBase64, // ❗️ MUDANÇA: Salvar o Base64
     };
 
-    // 4. FAÇA A REQUISIÇÃO POST
+    // 6. FAÇA A REQUISIÇÃO POST
     try {
       const response = await fetch(`${API_URL}/usuarios`, {
         method: "POST",
@@ -54,6 +128,11 @@ export default function RegisterScreen() {
 
       const data = await response.json();
       console.log("Usuário registrado:", data);
+
+      // ❗️ MUDANÇA: Salvar o ID do usuário logado
+      if (data.id) {
+        await AsyncStorage.setItem("usuarioId", data.id);
+      }
 
       Alert.alert("Sucesso!", "Sua conta foi criada.", [
         { text: "OK", onPress: () => router.replace("/excursoes") },
@@ -77,11 +156,6 @@ export default function RegisterScreen() {
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
-        <Image
-          source={require("../assets/images/Sublogo.png")}
-          style={styles.logo}
-        />
-
         <View style={styles.formContainer}>
           <TouchableOpacity
             onPress={() => router.back()}
@@ -91,6 +165,22 @@ export default function RegisterScreen() {
           </TouchableOpacity>
 
           <Text style={styles.title}>Inscrever-se</Text>
+
+          {/* 7. ADICIONA O BOTÃO DE FOTO DE PERFIL */}
+          <TouchableOpacity
+            style={styles.avatarPicker}
+            onPress={selectProfilePicture}
+          >
+            {imageUri ? (
+              <Image source={{ uri: imageUri }} style={styles.avatarImage} />
+            ) : (
+              <View style={styles.avatarPlaceholder}>
+                <Ionicons name="camera" size={40} color="#888" />
+                <Text style={styles.avatarPlaceholderText}>Adicionar foto</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+
           <View style={styles.loginPrompt}>
             <Text style={styles.loginPromptText}>Já tem uma conta? </Text>
             <TouchableOpacity onPress={navigateToLogin}>
@@ -98,7 +188,8 @@ export default function RegisterScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* 5. CONECTE OS INPUTS AOS ESTADOS */}
+          {/* ... (Restante dos inputs não muda) ... */}
+
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Nome Completo</Text>
             <View style={styles.inputWrapper}>
@@ -107,7 +198,7 @@ export default function RegisterScreen() {
                 placeholder="Digite seu nome completo"
                 placeholderTextColor="#999"
                 value={nomeCompleto}
-                onChangeText={setNomeCompleto} // ❗️ MUDANÇA
+                onChangeText={setNomeCompleto}
               />
             </View>
           </View>
@@ -122,7 +213,7 @@ export default function RegisterScreen() {
                 autoCapitalize="none"
                 placeholderTextColor="#999"
                 value={email}
-                onChangeText={setEmail} // ❗️ MUDANÇA
+                onChangeText={setEmail}
               />
             </View>
           </View>
@@ -135,7 +226,7 @@ export default function RegisterScreen() {
                 placeholder="DD/MM/AAAA"
                 placeholderTextColor="#999"
                 value={dataNascimento}
-                onChangeText={setDataNascimento} // ❗️ MUDANÇA
+                onChangeText={setDataNascimento}
               />
               <Feather
                 name="calendar"
@@ -159,7 +250,7 @@ export default function RegisterScreen() {
                 keyboardType="phone-pad"
                 placeholderTextColor="#999"
                 value={telefone}
-                onChangeText={setTelefone} // ❗️ MUDANÇA
+                onChangeText={setTelefone}
               />
             </View>
           </View>
@@ -173,7 +264,7 @@ export default function RegisterScreen() {
                 secureTextEntry={!isPasswordVisible}
                 placeholderTextColor="#999"
                 value={senha}
-                onChangeText={setSenha} // ❗️ MUDANÇA
+                onChangeText={setSenha}
               />
               <TouchableOpacity
                 onPress={() => setPasswordVisible(!isPasswordVisible)}
@@ -200,18 +291,11 @@ export default function RegisterScreen() {
   );
 }
 
+// ... (Estilos não mudam)
 const styles = StyleSheet.create({
-  // ... (seus estilos existentes)
   container: {
     flex: 1,
     backgroundColor: "#FFDE00",
-  },
-  logo: {
-    alignSelf: "center",
-    width: 80,
-    height: 80,
-    resizeMode: "contain",
-    marginBottom: 20,
   },
   scrollContainer: {
     flexGrow: 1,
@@ -240,8 +324,33 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#0902B0",
     textAlign: "center",
-    marginTop: 20,
     marginBottom: 8,
+  },
+  avatarPicker: {
+    alignSelf: "center",
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  avatarPlaceholder: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: "#F7F7F7",
+    borderWidth: 2,
+    borderColor: "#E8E8E8",
+    borderStyle: "dashed",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  avatarPlaceholderText: {
+    color: "#888",
+    fontSize: 12,
+    marginTop: 4,
+  },
+  avatarImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
   },
   loginPrompt: {
     flexDirection: "row",
