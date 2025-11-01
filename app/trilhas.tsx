@@ -11,10 +11,8 @@ import {
   View,
 } from "react-native";
 
-// 1. DEFINA A URL DA SUA API (use seu IP!)
-const API_URL = "http://10.0.0.66:3000"; // ❗️ SUBSTITUA PELO SEU IP
+const API_URL = "http://10.0.0.66:3000"; // ALTERAR SÓ IP
 
-// 2. DEFINA A INTERFACE
 interface Trilha {
   id: string;
   titulo: string;
@@ -24,12 +22,10 @@ interface Trilha {
 export default function TrilhasScreen() {
   const router = useRouter();
 
-  // 3. CRIE OS ESTADOS
   const [trilhas, setTrilhas] = useState<Trilha[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 4. CRIE O useEffect PARA BUSCAR OS DADOS
   useEffect(() => {
     const fetchTrilhas = async () => {
       try {
@@ -51,9 +47,8 @@ export default function TrilhasScreen() {
   }, []);
 
   const handleCardPress = (itemId: string) => {
-    // ❗️ MUDANÇA IMPORTANTE: Passando o ID para a próxima tela
     if (itemId === "diamantina") {
-      router.push("/detalhes_trilha"); // Mantido, mas idealmente passaria o ID
+      router.push("/detalhes_trilha");
     } else {
       console.log(`Navegação para ${itemId} ainda não implementada.`);
     }
@@ -63,7 +58,6 @@ export default function TrilhasScreen() {
     router.replace("/excursoes");
   };
 
-  // 5. ATUALIZE O RENDER
   const renderExploreContent = () => {
     if (loading) {
       return (
@@ -92,7 +86,7 @@ export default function TrilhasScreen() {
             onPress={() => handleCardPress(item.id)}
           >
             <Image
-              source={{ uri: item.imagemCapaUrl }} // ❗️ MUDANÇA AQUI
+              source={{ uri: item.imagemCapaUrl }}
               style={styles.cardImage}
             />
           </TouchableOpacity>
@@ -156,10 +150,6 @@ export default function TrilhasScreen() {
         </View>
       </ScrollView>
 
-      {/* // ===========================================
-      // ❗️❗️❗️ INÍCIO DA ALTERAÇÃO QUE VOCÊ PEDIU ❗️❗️❗️
-      // ===========================================
-      */}
       <View style={styles.navbar}>
         <TouchableOpacity
           style={styles.navItem}
@@ -177,7 +167,6 @@ export default function TrilhasScreen() {
           <Text style={styles.navText}>Minhas viagens</Text>
         </TouchableOpacity>
 
-        {/* ESTE É O BLOCO ALTERADO */}
         <TouchableOpacity
           style={styles.navItem}
           onPress={() => router.push("/feedbacks")}
@@ -185,7 +174,6 @@ export default function TrilhasScreen() {
           <Feather name="message-square" size={24} color="#333" />
           <Text style={styles.navText}>Feedbacks</Text>
         </TouchableOpacity>
-        {/* FIM DO BLOCO ALTERADO */}
 
         <TouchableOpacity
           style={styles.navItem}
@@ -195,16 +183,11 @@ export default function TrilhasScreen() {
           <Text style={styles.navText}>Perfil</Text>
         </TouchableOpacity>
       </View>
-      {/* // ===========================================
-      // ❗️❗️❗️ FIM DA ALTERAÇÃO ❗️❗️❗️
-      // ===========================================
-      */}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  // ... (seus estilos existentes)
   screen: {
     flex: 1,
     backgroundColor: "#F4F4F4",

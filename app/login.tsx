@@ -14,15 +14,13 @@ import {
   View,
 } from "react-native";
 
-// 1. DEFINA A URL DA SUA API (use seu IP!)
-const API_URL = "http://10.0.0.66:3000"; // ❗️ SUBSTITUA PELO SEU IP
+const API_URL = "http://10.0.0.66:3000"; // ALTERAR SÓ IP
 
 export default function LoginScreen() {
   const router = useRouter();
   const [isPasswordVisible, setPasswordVisible] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
-  // 2. CRIE ESTADOS PARA OS CAMPOS
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
 
@@ -32,9 +30,7 @@ export default function LoginScreen() {
       return;
     }
 
-    // 3. FAÇA A REQUISIÇÃO GET PARA VALIDAR O LOGIN
     try {
-      // json-server permite filtrar com query params
       const response = await fetch(
         `${API_URL}/usuarios?email=${email}&senha=${senha}`
       );
@@ -44,14 +40,10 @@ export default function LoginScreen() {
 
       const data = await response.json();
 
-      // 4. VERIFIQUE SE O USUÁRIO FOI ENCONTRADO
       if (data.length > 0) {
-        // Login com sucesso!
         console.log("Usuário logado:", data[0]);
-        // Aqui você salvaria o usuário logado (Context API, AsyncStorage, etc)
         router.replace("/excursoes");
       } else {
-        // Credenciais erradas
         Alert.alert("Erro", "Email ou senha incorretos.");
       }
     } catch (error) {
@@ -94,7 +86,6 @@ export default function LoginScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* 5. CONECTE OS INPUTS AOS ESTADOS */}
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Email</Text>
             <View style={styles.inputWrapper}>
@@ -105,7 +96,7 @@ export default function LoginScreen() {
                 autoCapitalize="none"
                 placeholderTextColor="#999"
                 value={email}
-                onChangeText={setEmail} // ❗️ MUDANÇA
+                onChangeText={setEmail}
               />
             </View>
           </View>
@@ -119,7 +110,7 @@ export default function LoginScreen() {
                 secureTextEntry={!isPasswordVisible}
                 placeholderTextColor="#999"
                 value={senha}
-                onChangeText={setSenha} // ❗️ MUDANÇA
+                onChangeText={setSenha}
               />
               <TouchableOpacity
                 onPress={() => setPasswordVisible(!isPasswordVisible)}
@@ -176,7 +167,6 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  // ... (seus estilos existentes)
   container: {
     flex: 1,
     backgroundColor: "#0902B0",

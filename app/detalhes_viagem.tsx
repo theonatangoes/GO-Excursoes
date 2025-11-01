@@ -17,14 +17,12 @@ import {
   ViewToken,
 } from "react-native";
 
-// 1. DEFINA A URL DA SUA API (use seu IP!)
-const API_URL = "http://10.0.0.66:3000"; // ❗️ SUBSTITUA PELO SEU IP
+const API_URL = "http://10.0.0.66:3000"; // ALTERAR SÓ IP
 
 const { width } = Dimensions.get("window");
 const SCREEN_PADDING = 20;
 const ITEM_WIDTH = width - SCREEN_PADDING * 2;
 
-// 2. DEFINA A INTERFACE COMPLETA DA EXCURSÃO
 interface ExcursaoDetalhes {
   id: string;
   titulo: string;
@@ -52,20 +50,13 @@ export default function DetalhesViagem() {
   const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // 3. CRIE OS ESTADOS
   const [viagem, setViagem] = useState<ExcursaoDetalhes | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 4. CRIE O useEffect PARA BUSCAR OS DADOS
   useEffect(() => {
     const fetchViagem = async () => {
       try {
-        // ❗️ ATENÇÃO: Hardcoded para 'porto-seguro'
-        // O ideal aqui é pegar o ID vindo da navegação
-        // const { id } = useLocalSearchParams();
-        // const response = await fetch(`${API_URL}/excursoes/${id}`);
-
         const response = await fetch(`${API_URL}/excursoes/porto-seguro`);
         if (!response.ok) {
           throw new Error("Falha ao buscar dados da viagem.");
@@ -99,7 +90,6 @@ export default function DetalhesViagem() {
     router.push("/pagamento_porto");
   };
 
-  // 5. LÓGICA DE RENDERIZAÇÃO
   if (loading) {
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -116,11 +106,10 @@ export default function DetalhesViagem() {
     );
   }
 
-  // Define a imagem de estrelas com base no JSON
   const starImage =
     viagem.hotel.estrelas === 3
       ? require("../assets/images/3estrelas.png")
-      : require("../assets/images/4estrelas.png"); // Adicione outras lógicas se precisar
+      : require("../assets/images/4estrelas.png");
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -153,9 +142,9 @@ export default function DetalhesViagem() {
 
         <View style={styles.carouselContainer}>
           <FlatList
-            data={viagem.imagensCarousel} // ❗️ MUDANÇA AQUI
+            data={viagem.imagensCarousel}
             renderItem={({ item }) => (
-              <Image source={{ uri: item }} style={styles.carouselImage} /> // ❗️ MUDANÇA AQUI
+              <Image source={{ uri: item }} style={styles.carouselImage} />
             )}
             keyExtractor={(_, index) => index.toString()}
             horizontal
@@ -165,20 +154,15 @@ export default function DetalhesViagem() {
             viewabilityConfig={viewabilityConfig}
           />
           <View style={styles.paginationContainer}>
-            {viagem.imagensCarousel.map(
-              (
-                _,
-                index // ❗️ MUDANÇA AQUI
-              ) => (
-                <View
-                  key={index}
-                  style={[
-                    styles.dot,
-                    index === activeIndex ? styles.activeDot : {},
-                  ]}
-                />
-              )
-            )}
+            {viagem.imagensCarousel.map((_, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.dot,
+                  index === activeIndex ? styles.activeDot : {},
+                ]}
+              />
+            ))}
           </View>
         </View>
 
@@ -244,7 +228,6 @@ export default function DetalhesViagem() {
 }
 
 const styles = StyleSheet.create({
-  // ... (seus estilos existentes)
   safeArea: {
     flex: 1,
     backgroundColor: "#fff",

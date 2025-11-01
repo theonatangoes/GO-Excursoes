@@ -1,4 +1,5 @@
 import { Feather, Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -16,19 +17,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-// ❗️ MUDANÇA: Importar o AsyncStorage
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// ❗️ Use seu IP
-const API_URL = "http://10.0.0.66:3000";
-
-// ❗️ MUDANÇA: Removemos o USUARIO_ID = 1 daqui
+const API_URL = "http://10.0.0.66:3000"; // ALTERAR SÓ IP
 
 export default function PerfilUsuarioScreen() {
   const router = useRouter();
   const [isPasswordVisible, setPasswordVisible] = useState(false);
 
-  // ❗️ ESTADOS PARA OS DADOS DO FORMULÁRIO
   const [nomeCompleto, setNomeCompleto] = useState("");
   const [email, setEmail] = useState("");
   const [dataNascimento, setDataNascimento] = useState("");
@@ -37,16 +32,13 @@ export default function PerfilUsuarioScreen() {
   const [fotoPerfilUrl, setFotoPerfilUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // ❗️ MUDANÇA: Estado para guardar o ID do usuário
   const [usuarioId, setUsuarioId] = useState<string | null>(null);
 
-  // ❗️ MUDANÇA: Busca os dados do usuário do AsyncStorage
   useEffect(() => {
     const fetchUsuario = async () => {
       try {
         setLoading(true);
 
-        // 1. Busca o ID salvo no AsyncStorage
         const id = await AsyncStorage.getItem("usuarioId");
         if (!id) {
           Alert.alert("Erro", "Usuário não encontrado. Faça login novamente.", [
@@ -54,22 +46,20 @@ export default function PerfilUsuarioScreen() {
           ]);
           return;
         }
-        setUsuarioId(id); // Salva o ID no estado
+        setUsuarioId(id);
 
-        // 2. Usa o ID salvo para buscar os dados
         const response = await fetch(`${API_URL}/usuarios/${id}`);
         if (!response.ok) {
           throw new Error("Usuário não encontrado.");
         }
         const data = await response.json();
 
-        // 3. Preenche os campos
         setNomeCompleto(data.nomeCompleto);
         setEmail(data.email);
         setDataNascimento(data.dataNascimento);
         setTelefone(data.telefone);
         setSenha(data.senha);
-        setFotoPerfilUrl(data.fotoPerfilUrl || null); // Puxa a foto (URL ou Base64)
+        setFotoPerfilUrl(data.fotoPerfilUrl || null);
       } catch (error) {
         console.error(error);
         Alert.alert("Erro", "Não foi possível carregar os dados do perfil.");
@@ -82,14 +72,10 @@ export default function PerfilUsuarioScreen() {
   }, []);
 
   const handleUpdateProfile = async () => {
-    // ❗️ MUDANÇA: Garante que temos o ID para o PATCH
     if (!usuarioId) {
       Alert.alert("Erro", "ID do usuário não encontrado.");
       return;
     }
-
-    // ❗️ MUDANÇA: Se você permitir trocar a foto aqui, terá que refazer a lógica do Base64
-    // Por enquanto, ele apenas reenviará a foto que já estava salva (fotoPerfilUrl)
     const dadosAtualizados = {
       nomeCompleto,
       email,
@@ -101,7 +87,6 @@ export default function PerfilUsuarioScreen() {
 
     try {
       const response = await fetch(`${API_URL}/usuarios/${usuarioId}`, {
-        // ❗️ MUDANÇA: Usa o ID do estado
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -119,7 +104,6 @@ export default function PerfilUsuarioScreen() {
     }
   };
 
-  // Se estiver carregando, mostra um spinner
   if (loading) {
     return (
       <SafeAreaView style={[styles.safeArea, { justifyContent: "center" }]}>
@@ -149,10 +133,6 @@ export default function PerfilUsuarioScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.formCard}>
-            {/* ❗️ NENHUMA MUDANÇA AQUI ❗️
-              O <Image> com {uri: ...} já sabe como ler
-              tanto uma URL normal (http://) quanto um Base64 (data:image/...).
-            */}
             <Image
               source={
                 fotoPerfilUrl
@@ -260,7 +240,6 @@ export default function PerfilUsuarioScreen() {
   );
 }
 
-// ... (Estilos não mudam)
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -317,7 +296,7 @@ const styles = StyleSheet.create({
     top: -60,
     borderWidth: 4,
     borderColor: "#F4F4F4",
-    backgroundColor: "#E0E0E0", // Cor de fundo para o avatar
+    backgroundColor: "#E0E0E0",
   },
   inputGroup: {
     marginBottom: 20,

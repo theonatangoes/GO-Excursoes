@@ -13,10 +13,8 @@ import {
   View,
 } from "react-native";
 
-// ❗️ Use seu IP
-const API_URL = "http://10.0.0.66:3000";
+const API_URL = "http://10.0.0.66:3000"; // ALTERAR SÓ IP
 
-// Interface para o Feedback
 interface Feedback {
   id: number;
   usuarioNome: string;
@@ -26,7 +24,6 @@ interface Feedback {
   fotoViagemUrl: string;
 }
 
-// Componente para renderizar as estrelas
 const Stars = ({ count }: { count: number }) => {
   const starIcons = [];
   for (let i = 0; i < 5; i++) {
@@ -48,7 +45,6 @@ export default function FeedbacksScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // useFocusEffect recarrega os dados toda vez que a tela entra em foco
   useFocusEffect(
     React.useCallback(() => {
       const fetchFeedbacks = async () => {
@@ -59,7 +55,7 @@ export default function FeedbacksScreen() {
             throw new Error("Falha ao buscar feedbacks.");
           }
           const data: Feedback[] = await response.json();
-          setFeedbacks(data.reverse()); // .reverse() para mostrar os mais novos primeiro
+          setFeedbacks(data.reverse());
         } catch (e) {
           setError("Não foi possível carregar os feedbacks.");
           console.error(e);
@@ -115,7 +111,6 @@ export default function FeedbacksScreen() {
         {renderContent()}
       </ScrollView>
 
-      {/* Botão flutuante de + */}
       <TouchableOpacity
         style={styles.fab}
         onPress={() => router.push("/enviar_feedback")}
@@ -149,7 +144,7 @@ const styles = StyleSheet.create({
   scrollContainer: {
     paddingHorizontal: 16,
     paddingBottom: 100,
-    paddingTop: 20, // ❗️❗️❗️ ESTA FOI A LINHA ADICIONADA ❗️❗️❗️
+    paddingTop: 20,
   },
   card: {
     backgroundColor: "#FFF",

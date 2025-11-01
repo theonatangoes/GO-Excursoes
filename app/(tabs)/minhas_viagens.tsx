@@ -13,11 +13,11 @@ import {
   View,
 } from "react-native";
 
-const API_URL = "http://10.0.0.66:3000";
+const API_URL = "http://10.0.0.66:3000"; // ALTERAR SÓ IP
 
 interface MinhaViagem {
   id: number;
-  viagemId: string; 
+  viagemId: string;
   titulo: string;
   imagemUrl: string;
 }
@@ -31,7 +31,7 @@ export default function MinhasViagensScreen() {
   useFocusEffect(
     React.useCallback(() => {
       const fetchMinhasViagens = async () => {
-        setLoading(true); 
+        setLoading(true);
         try {
           const response = await fetch(`${API_URL}/minhasViagens`);
           if (!response.ok) {
@@ -82,9 +82,9 @@ export default function MinhasViagensScreen() {
       <>
         {trips.map((trip) => (
           <TouchableOpacity
-            key={trip.id} 
+            key={trip.id}
             activeOpacity={0.9}
-            onPress={() => handleTripPress(trip.viagemId)} 
+            onPress={() => handleTripPress(trip.viagemId)}
           >
             <Image source={{ uri: trip.imagemUrl }} style={styles.cardImage} />
           </TouchableOpacity>

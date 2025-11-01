@@ -13,8 +13,7 @@ import {
   View,
 } from "react-native";
 
-// Defina seu IP
-const API_URL = "http://10.0.0.66:3000";
+const API_URL = "http://10.0.0.66:3000"; // ALTERAR SÓ IP
 
 const paymentMethods = [
   {
@@ -44,23 +43,19 @@ export default function PagamentoScreen() {
   const handleConfirmPayment = async () => {
     console.log(`Pagamento confirmado com: ${selectedMethod}`);
 
-    // ❗️❗️ OLHE AQUI A SUA ALTERAÇÃO ❗️❗️
     const novaViagem = {
       viagemId: "porto-seguro",
       titulo: "Porto Seguro",
-      // Este é o link direto da imagem que você enviou
+
       imagemUrl: "https://i.imgur.com/S9kcMwa.png",
     };
-    // ❗️❗️ FIM DA ALTERAÇÃO ❗️❗️
 
     try {
-      // 1. Verifica se a viagem já existe
       const checkResponse = await fetch(
         `${API_URL}/minhasViagens?viagemId=${novaViagem.viagemId}`
       );
       const existingTrips = await checkResponse.json();
 
-      // 2. Se não existe (length === 0), adiciona
       if (existingTrips.length === 0) {
         const addResponse = await fetch(`${API_URL}/minhasViagens`, {
           method: "POST",
@@ -76,7 +71,6 @@ export default function PagamentoScreen() {
         console.log("Viagem já existe em Minhas Viagens.");
       }
 
-      // 3. Navega para a tela de aprovação
       router.replace("/pagamento_aprovado");
     } catch (error) {
       console.error(error);

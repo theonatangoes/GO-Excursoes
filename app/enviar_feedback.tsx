@@ -14,12 +14,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-// ❗️ REMOVEMOS O 'expo-camera', não é necessário para esta tela
 
-// ❗️ Use seu IP
-const API_URL = "http://10.0.0.66:3000";
+const API_URL = "http://10.0.0.66:3000"; // ALTERAR SÓ IP
 
-// Componente de Estrelas Clicável
 const StarRatingInput = ({
   rating,
   setRating,
@@ -52,7 +49,6 @@ export default function EnviarFeedbackScreen() {
   const [comentario, setComentario] = useState("");
   const [imageUri, setImageUri] = useState<string | null>(null);
 
-  // Pedir permissão e abrir galeria
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
@@ -70,19 +66,12 @@ export default function EnviarFeedbackScreen() {
       setImageUri(result.assets[0].uri);
     }
   };
-
-  //
-  // ❗️❗️❗️ AQUI ESTÁ A CORREÇÃO ❗️❗️❗️
-  //
-  // Pedir permissão e abrir câmera (usando ImagePicker)
   const takePhoto = async () => {
-    // 1. Pede permissão da CÂMERA
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== "granted") {
       Alert.alert("Precisamos de permissão para usar sua câmera.");
       return;
     }
-    // 2. Abre a CÂMERA
     const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
       aspect: [4, 3],
@@ -93,10 +82,6 @@ export default function EnviarFeedbackScreen() {
       setImageUri(result.assets[0].uri);
     }
   };
-  // ❗️❗️❗️ FIM DA CORREÇÃO ❗️❗️❗️
-  //
-
-  // Enviar o Feedback para o json-server
   const handleEnviarFeedback = async () => {
     if (rating === 0 || !comentario || !imageUri) {
       Alert.alert(
@@ -105,15 +90,12 @@ export default function EnviarFeedbackScreen() {
       );
       return;
     }
-
-    // Como discutimos, vamos salvar o URI local da imagem
-    // (Funciona no seu celular, mas não em outros)
     const novoFeedback = {
-      usuarioNome: "Theo Natan", // Mocado por enquanto
-      usuarioFotoUrl: "https://i.imgur.com/avatar-placeholder.png", // Mocado
+      usuarioNome: "Theo Natan",
+      usuarioFotoUrl: "https://i.imgur.com/avatar-placeholder.png",
       estrelas: rating,
       comentario: comentario,
-      fotoViagemUrl: imageUri, // Salvando o caminho local (ex: file://...)
+      fotoViagemUrl: imageUri,
     };
 
     try {
@@ -166,7 +148,6 @@ export default function EnviarFeedbackScreen() {
             </TouchableOpacity>
           </View>
 
-          {/* Preview da Imagem */}
           {imageUri && (
             <Image source={{ uri: imageUri }} style={styles.imagePreview} />
           )}
@@ -271,7 +252,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333",
     height: 120,
-    textAlignVertical: "top", // Para Android
+    textAlignVertical: "top",
   },
   submitButton: {
     backgroundColor: "#FFDE00",

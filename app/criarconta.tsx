@@ -14,27 +14,23 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-// ❗️ MUDANÇA: Importar o AsyncStorage
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// 1. DEFINA A URL DA SUA API (use seu IP!)
-const API_URL = "http://10.0.0.66:3000"; // ❗️ SUBSTITUA PELO SEU IP
+const API_URL = "http://10.0.0.66:3000"; // ALTERAR SÓ IP
 
 export default function RegisterScreen() {
   const router = useRouter();
   const [isPasswordVisible, setPasswordVisible] = useState(false);
 
-  // 2. CRIE ESTADOS PARA CADA CAMPO DO FORMULÁRIO
   const [nomeCompleto, setNomeCompleto] = useState("");
   const [email, setEmail] = useState("");
   const [dataNascimento, setDataNascimento] = useState("");
   const [telefone, setTelefone] = useState("");
   const [senha, setSenha] = useState("");
   const [imageUri, setImageUri] = useState<string | null>(null);
-  // ❗️ MUDANÇA: Novo estado para o Base64
   const [imageBase64, setImageBase64] = useState<string | null>(null);
 
-  // 3. FUNÇÕES DE CÂMERA E GALERIA
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
@@ -44,14 +40,13 @@ export default function RegisterScreen() {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [1, 1], // Quadrado para foto de perfil
+      aspect: [1, 1],
       quality: 1,
-      base64: true, // ❗️ MUDANÇA: Solicitar Base64
+      base64: true,
     });
 
     if (!result.canceled) {
       setImageUri(result.assets[0].uri);
-      // ❗️ CORREÇÃO AQUI: Converte 'undefined' para 'null'
       setImageBase64(result.assets[0].base64 ?? null);
     }
   };
@@ -64,19 +59,17 @@ export default function RegisterScreen() {
     }
     const result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
-      aspect: [1, 1], // Quadrado para foto de perfil
+      aspect: [1, 1],
       quality: 1,
-      base64: true, // ❗️ MUDANÇA: Solicitar Base64
+      base64: true,
     });
 
     if (!result.canceled) {
       setImageUri(result.assets[0].uri);
-      // ❗️ CORREÇÃO AQUI: Converte 'undefined' para 'null'
       setImageBase64(result.assets[0].base64 ?? null);
     }
   };
 
-  // 4. FUNÇÃO QUE DEIXA O USUÁRIO ESCOLHER
   const selectProfilePicture = () => {
     Alert.alert(
       "Foto de Perfil",
@@ -90,8 +83,6 @@ export default function RegisterScreen() {
   };
 
   const handleRegister = async () => {
-    // 5. ATUALIZA A VALIDAÇÃO E O OBJETO
-    // ❗️ MUDANÇA: Validar também o imageBase64
     if (!nomeCompleto || !email || !senha || !imageUri || !imageBase64) {
       Alert.alert(
         "Erro",
@@ -100,7 +91,6 @@ export default function RegisterScreen() {
       return;
     }
 
-    // ❗️ MUDANÇA: Formatar a string de dados da imagem Base64
     const fotoUrlBase64 = `data:image/jpeg;base64,${imageBase64}`;
 
     const novoUsuario = {
@@ -109,10 +99,9 @@ export default function RegisterScreen() {
       dataNascimento,
       telefone,
       senha,
-      fotoPerfilUrl: fotoUrlBase64, // ❗️ MUDANÇA: Salvar o Base64
+      fotoPerfilUrl: fotoUrlBase64,
     };
 
-    // 6. FAÇA A REQUISIÇÃO POST
     try {
       const response = await fetch(`${API_URL}/usuarios`, {
         method: "POST",
@@ -129,7 +118,6 @@ export default function RegisterScreen() {
       const data = await response.json();
       console.log("Usuário registrado:", data);
 
-      // ❗️ MUDANÇA: Salvar o ID do usuário logado
       if (data.id) {
         await AsyncStorage.setItem("usuarioId", data.id);
       }
@@ -166,7 +154,6 @@ export default function RegisterScreen() {
 
           <Text style={styles.title}>Inscrever-se</Text>
 
-          {/* 7. ADICIONA O BOTÃO DE FOTO DE PERFIL */}
           <TouchableOpacity
             style={styles.avatarPicker}
             onPress={selectProfilePicture}
@@ -187,8 +174,6 @@ export default function RegisterScreen() {
               <Text style={styles.loginLink}>Entrar</Text>
             </TouchableOpacity>
           </View>
-
-          {/* ... (Restante dos inputs não muda) ... */}
 
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Nome Completo</Text>
@@ -291,7 +276,6 @@ export default function RegisterScreen() {
   );
 }
 
-// ... (Estilos não mudam)
 const styles = StyleSheet.create({
   container: {
     flex: 1,

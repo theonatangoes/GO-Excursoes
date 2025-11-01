@@ -1,6 +1,6 @@
 import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react"; // Importar useEffect e useState
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -11,10 +11,8 @@ import {
   View,
 } from "react-native";
 
-// 1. DEFINA A URL DA SUA API (use seu IP!)
-const API_URL = "http://10.0.0.66:3000"; // ❗️ SUBSTITUA PELO SEU IP
+const API_URL = "http://10.0.0.66:3000"; // ALTERAR SÓ IP
 
-// 2. DEFINA A INTERFACE DOS DADOS
 interface Excursao {
   id: string;
   titulo: string;
@@ -24,12 +22,10 @@ interface Excursao {
 export default function ExcursoesScreen() {
   const router = useRouter();
 
-  // 3. CRIE ESTADOS para guardar os dados, o carregamento e erros
   const [excursoes, setExcursoes] = useState<Excursao[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 4. CRIE O useEffect PARA BUSCAR OS DADOS QUANDO A TELA ABRE
   useEffect(() => {
     const fetchExcursoes = async () => {
       try {
@@ -48,14 +44,11 @@ export default function ExcursoesScreen() {
     };
 
     fetchExcursoes();
-  }, []); // O array vazio [] faz com que isso rode apenas 1 vez
+  }, []);
 
   const handleCardPress = (itemId: string) => {
-    // ❗️ MUDANÇA IMPORTANTE: Passando o ID para a próxima tela
-    // Certifique-se que sua rota de detalhes aceite um ID
-    // ex: app/detalhes_viagem/[id].tsx
     if (itemId === "porto-seguro") {
-      router.push("/detalhes_viagem"); // Mantido como o original, mas idealmente passaria o ID
+      router.push("/detalhes_viagem");
     } else {
       console.log(`Navegação para ${itemId} ainda não implementada.`);
     }
@@ -65,14 +58,13 @@ export default function ExcursoesScreen() {
     router.replace("/trilhas");
   };
 
-  // 5. ATUALIZE O RENDER
   const renderExploreContent = () => {
     if (loading) {
       return (
         <ActivityIndicator
           size="large"
           color="#0902B0"
-          style={{ marginTop: 20, height: 260 }} // Manter altura
+          style={{ marginTop: 20, height: 260 }}
         />
       );
     }
@@ -94,7 +86,7 @@ export default function ExcursoesScreen() {
             onPress={() => handleCardPress(item.id)}
           >
             <Image
-              source={{ uri: item.imagemCapaUrl }} // ❗️ MUDANÇA AQUI
+              source={{ uri: item.imagemCapaUrl }}
               style={styles.cardImage}
             />
           </TouchableOpacity>
@@ -159,10 +151,6 @@ export default function ExcursoesScreen() {
         </View>
       </ScrollView>
 
-      {/* // ===========================================
-      // ❗️❗️❗️ INÍCIO DA ALTERAÇÃO QUE VOCÊ PEDIU ❗️❗️❗️
-      // ===========================================
-      */}
       <View style={styles.navbar}>
         <TouchableOpacity
           style={styles.navItem}
@@ -180,7 +168,6 @@ export default function ExcursoesScreen() {
           <Text style={styles.navText}>Minhas viagens</Text>
         </TouchableOpacity>
 
-        {/* ESTE É O BLOCO ALTERADO */}
         <TouchableOpacity
           style={styles.navItem}
           onPress={() => router.push("/feedbacks")}
@@ -188,7 +175,6 @@ export default function ExcursoesScreen() {
           <Feather name="message-square" size={24} color="#333" />
           <Text style={styles.navText}>Feedbacks</Text>
         </TouchableOpacity>
-        {/* FIM DO BLOCO ALTERADO */}
 
         <TouchableOpacity
           style={styles.navItem}
@@ -198,16 +184,11 @@ export default function ExcursoesScreen() {
           <Text style={styles.navText}>Perfil</Text>
         </TouchableOpacity>
       </View>
-      {/* // ===========================================
-      // ❗️❗️❗️ FIM DA ALTERAÇÃO ❗️❗️❗️
-      // ===========================================
-      */}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  // ... (seus estilos existentes)
   screen: {
     flex: 1,
     backgroundColor: "#F4F4F4",
@@ -329,7 +310,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     borderRadius: 15,
-    backgroundColor: "#e0e0e0", // Cor de fundo
+    backgroundColor: "#e0e0e0",
   },
   navbar: {
     position: "absolute",
