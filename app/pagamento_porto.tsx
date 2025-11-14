@@ -13,7 +13,7 @@ import {
   View,
 } from "react-native";
 
-const API_URL = "http://10.0.0.66:3000"; // ALTERAR SÓ IP
+const API_URL = "http://10.211.123.25:3000";
 
 const paymentMethods = [
   {

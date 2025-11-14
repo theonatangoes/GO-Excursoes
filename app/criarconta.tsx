@@ -17,7 +17,7 @@ import {
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const API_URL = "http://10.0.0.66:3000"; // ALTERAR SÓ IP
+const API_URL = "http://10.211.123.25:3000";
 
 export default function RegisterScreen() {
   const router = useRouter();
